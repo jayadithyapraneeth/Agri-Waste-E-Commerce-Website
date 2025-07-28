@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Page</title>
+    <style>
+    body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 1400px; /* Adjust as needed */
+    height: 600px; /* Adjust as needed */
+    /*align-items: center;*/
+    background-image:url(loginpagebackgroundimage.jpg);
+    
+}
+
+.left-section {
+    flex: 7;
+    padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+  
+}
+
+.left-section h1 {
+    font-size: 3em;
+    margin-bottom: 0px;
+     color: #000067;
+}
+
+.left-section .hello-text {
+    font-size: 1.5em;
+    margin-bottom: 0px; 
+      color: #fff;
+}
+
+
+
+.right-section {
+    flex: 2;
+    padding-left: 20px;
+    padding-right:20px;
+    padding:20px;
+    border-left: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #fff;
+    margin-bottom: 0px;
+    
+}
+
+.right-section h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.right-section form {
+    display: flex;
+    flex-direction: column;
+}
+
+.right-section label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.right-section input[type="text"],
+.right-section input[type="password"] {
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.right-section button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.right-section button:hover {
+    background-color: #0056b3;
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <h1>Welcome</h1><br><br><br>
+            <p class="hello-text"><b>  &nbsp; &nbsp; &nbsp; &nbsp;Agricultural waste e-commerce platform is a <u>digital marketplace</u> that connect stakeholders involved in managing and utilizing agricultural waste with farmers. This platform facilitate the exchange of information, resources, and services, enabling efficient waste collection, processing, and conversion into valuable products.</b><br>
+<center class = "hello-text"font><b>We promote circular economy and imapacting the environment positivley</b></center></p>
+         
+        </div>
+        <div class="right-section">
+          <figure align="center">
+    <img src="farmdregslogo.jpeg"  alt="buy smart-sell wise" width="100" height="50" align="center">
+    <figcaption style="color:#800000;"> - Buy Smart Sell Wise</figcaption>
+    </figure>
+        <h2>Login</h2>
+        <form action="#" method="post">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="checkbox-group">
+                <div>
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe">Remember me</label>
+                </div><br>
+                <a href="#">Forgot password?</a>
+            </div><br>
+            <button type="submit" class="login-button">Login</button>
+        </form><br>
+        <div class="links">
+            Don't have an account? <a href="#">Register</a>
+        </div>
+        <br>
+    </div>
+</body>
+</html>
