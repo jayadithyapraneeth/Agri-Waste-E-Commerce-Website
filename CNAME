@@ -1,2 +1,3 @@
-Name = agriwaste
-Value = jayadithyapraneeth.github.io
+Name:  www
+Value: jayadithyapraneeth.github.io
+TTL :  30 min
