@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller Page</title>
+    <link rel="stylesheet" href="style2.css" >
+  <script type=text/javascript>
+  function showOptions()
+  {
+  var options=document.getElementById("options");
+  if(options.style.display==="block")
+  {
+  options.style.display="none";
+  }
+  else{
+  options.style.display="block";
+  }
+  }
+  </script>
+  <script type="text/javascript">
+   document.addEventListener("click",function(event)
+ {
+ if(!event.target.closest(".dropdown")){
+ document.getElementById("options").style.display="none";
+ }
+ });</script>
+ <script type=text/javascript>
+  function showOption()
+  {
+  var option=document.getElementById("option");
+  if(option.style.display==="block")
+  {
+  option.style.display="none";
+  }
+  else{
+  option.style.display="block";
+  }
+  }
+  </script>
+  <script type="text/javascript">
+   document.addEventListener("click",function(event)
+ {
+ if(!event.target.closest(".dropdown")){
+ document.getElementById("option").style.display="none";
+ }
+ });</script>
+  </head>
+  <body>
+    <header class="header">
+      <nav class="navbar">
+      <img src="farmdregslogo.jpeg" width="100" height="50">
+        
+        <ul class="links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">About Us</a></li>
+         <!-- <li><a href="#">Stuff</a></li>
+          <li><a href="#">Registration</a></li>
+          <li><a href="#">Orders</a></li>-->
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      
+        <div class="dropdown">
+    <button class="dropdown-button"  onclick="showOption()">Profile</button>
+    <ul class="dropdown-option" id="option">
+    
+        <li><a href="#">Edit profile</a>     </li>
+        <li><a href="#">help&support</a></li>
+        <li><a href="#">Logout</a></li>
+    </ul>
+</div>
+      </nav>
+    </header>
+    <section class="first-section">
+      <div class="first">
+        <h2>welcome to sellers</h2>
+        
+        <p>List your agricultural waste with ease on our user-friendly platform and reach a wider market of buyers looking for sustainable resources.
+We offer secure transactions and efficient logistics, making it simple for you to sell your agricultural waste and contribute to a circular economy.
+Join our community of eco-conscious sellers and buyers, where your waste becomes a valuable asset.</p>
+       
+      
+      <div class="dropdown">
+    <button class="dropdown-button" onclick="showOptions()">Get started</button>
+    <ul class="dropdown-options" id="options">  
+       <li><a href="stuff">Stuff</a></li>
+   <li>  <a href="registration">Registration</a></li>
+      <li>  <a href="order">Orders</a></ul>
+    </div>
+</div>
+      <div class="img">
+        
+        <img src="homepagebackground.jpeg" width="800" height="450">
+      </div>
+    </section>
+  </body>
+</html>
+
