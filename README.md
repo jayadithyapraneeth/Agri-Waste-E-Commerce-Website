@@ -44,13 +44,14 @@ Notably, the platform increases the trading capacity of Agri-waste in India, mak
 - **MySQL**: Primary database for data storage
 - **JDBC**: Database connectivity
 - **WebSocket API (JSR-356)**: Real-time messaging
-- **Maven**: Dependency management
+- **Apache DBPC**: Server Connection Pooling
+- **JSON Objects**: Supplying Data to the pages Dynamically from the Database through Servlet
 
 ### Frontend
 - **HTML5/CSS3**: Core web technologies
 - **JavaScript**: Dynamic user interactions
-- **Bootstrap**: Responsive design framework
 - **AJAX**: Asynchronous server communication
+- **Fetch API**: For fullfilling the data needs Dynamically
 
 ### External Services
 - **Payment Gateway**: Razorpay/PayPal integration
