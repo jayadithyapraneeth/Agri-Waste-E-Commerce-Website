@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+  <title>My Orders</title>
+  <style>
+    :root{
+      --bg1:#065e65; --bg2:#421f5a;
+      --accent:#15b8a6; --ok:#2e7d32; --warn:#ef6c00; --err:#c62828; --muted:#777;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color:#fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    .appbar{
+      position:sticky; top:0; z-index:2;
+      background:rgba(0,0,0,0.25);
+      backdrop-filter: blur(6px);
+      padding:14px 18px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid rgba(255,255,255,0.12);
+    }
+    .appbar h1{margin:0; font-size:1.2rem; letter-spacing:0.3px}
+    .container{
+      width: min(1100px, 94vw);
+      margin: 18px auto 28px;
+      background: #ffffff; color:#222;
+      border-radius:14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      overflow:hidden;
+    }
+    .header{
+      padding:16px 18px;
+      background: linear-gradient(90deg, rgba(21,184,166,0.15), rgba(255,255,255,0));
+      border-bottom:1px solid #eee;
+      display:flex; align-items:center; gap:10px;
+    }
+    .header h2{margin:0; font-size:1.1rem; color:#0f3a3f}
+    .table-wrap{
+      width:100%; overflow:auto;
+    }
+    table{
+      width:100%; border-collapse:separate; border-spacing:0;
+      font-size:0.95rem;
+    }
+    thead th{
+      position:sticky; top:0; z-index:1;
+      background:#0e6e6e; color:#fff; text-align:left;
+      padding:12px 12px;
+      border-bottom:2px solid #0b5454;
+      white-space:nowrap;
+    }
+    tbody td{ padding:12px 12px; border-bottom:1px solid #f0f0f0; vertical-align:top; }
+    tbody tr:nth-child(odd){ background:#fafafa; }
+    tbody tr:hover{ background:#f3fbfb; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .amount{ font-weight:600; }
+    .badge{
+      display:inline-block; padding:4px 8px; border-radius:999px; font-size:0.8rem; font-weight:600;
+    }
+    .status-new{ background:#e3f2fd; color:#1565c0; }
+    .status-processing{ background:#fff3e0; color:#ef6c00; }
+    .status-shipped{ background:#e8f5e9; color:#2e7d32; }
+    .status-delivered{ background:#e8f5e9; color:#2e7d32; }
+    .status-cancelled{ background:#ffebee; color:#c62828; }
+    .pay-paid{ background:#e8f5e9; color:#1b5e20; }
+    .pay-pending{ background:#fff3e0; color:#e65100; }
+    .pay-failed{ background:#ffebee; color:#b71c1c; }
+    .empty{ padding:22px; text-align:center; color:#555; }
+    .meta{ color:var(--muted); font-size:0.85rem; }
+    @media (max-width:800px){
+      thead th:nth-child(4), tbody td:nth-child(4){ min-width:220px; }
+      thead th, tbody td{ white-space:nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class='appbar'>
+    <h1>Orders</h1>
+    <span class='meta'>Updated just now</span>
+  </div>
+  <div class='container'>
+    <div class='header'>
+      <h2>Orders Received</h2>
+    </div>
+    <div class='table-wrap'>
+      <table id ="ordersTable">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Departure Address</th>
+            <th>Order Worth</th>
+            <th>Order Date</th>
+            <th>Order Status</th>
+            <th>Payment Status</th>
+            <th>Delivered Date</th>
+            <th>Payment Date</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Fetch orders from the server
+      const tbody = document.querySelector('#ordersTable tbody');
+      fetch("ordertrackingservletfarmer",
+    		  {method: 'GET'
+   })
+        .then(response => response.json())
+        .then(data => {
+          tbody.innerHTML = ''; // Clear existing rows
+
+          if (data.length === 0 || !data) {
+        	  const row = document.createElement('tr');
+            row.innerHTML = `<td colspan='10' class='empty'>No orders received yet. When a buyer places an order, it will appear here.</td>`;
+            tbody.appendChild(row);
+          }else{
+        	  data.forEach(orders => {
+                  const row = document.createElement('tr');
+                  row.innerHTML = `
+                    <td>${orders.orderid}</td>
+                    <td>${orders.cropid}</td>
+                    <td>${orders.noofunitsordered}</td>
+                    <td>${orders.toaddress}</td>
+                    <td class='amount'>₹${orders.orderworth}</td>
+                    <td>${orders.orderdate}</td>
+                    <td><span class='badge status-${orders.orderstatus.toLowerCase()}'>${orders.orderstatus}</span></td>
+                    <td><span class='badge pay-${orders.paymentstatus.toLowerCase()}'>${orders.paymentstatus}</span></td>
+                    <td>${orders.delivereddate}</td>
+                    <td>${orders.paymentdate}</td>
+                  `;
+                  tbody.appendChild(row);
+                });  
+          }
+        });
+    });
+          
+  </script>
+  
+</body>
+</html>
