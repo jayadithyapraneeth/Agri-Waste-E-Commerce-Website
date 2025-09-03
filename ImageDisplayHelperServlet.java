@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
@@ -15,6 +17,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.json.JSONObject;
 
 /**
  * Servlet implementation class ImageDisplayHelperServlet
@@ -112,10 +116,16 @@ public class ImageDisplayHelperServlet extends HttpServlet {
 						//if(f.exists()) {
 						//	System.out.println("image written to newfolder successfully");
 						//}
-						response.setContentLength(imagebytes.length);
-						response.getOutputStream().write(imagebytes);
-						System.out.println("response.getOutputStream().write(imagebytes)");
+						if(imagebytes != null) {
+							response.setContentLength(imagebytes.length);
+							response.getOutputStream().write(imagebytes);
+							System.out.println("response.getOutputStream().write(imagebytes)");
+						}else {
+							response.setContentType("application/json");
+							//response.getWriter().print(new JSONObject().put(, false))
+						}
 						response.setContentType("application/json");
+						
 					}else {
 						System.out.println("rs.next() failed");
 					}
