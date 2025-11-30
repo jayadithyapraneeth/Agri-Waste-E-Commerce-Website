@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriCorn Buyer Dashboard</title>
+    <!-- Load Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Ensure the body uses the Inter font and has no margin for full width */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh; /* Ensure full viewport height */
+        }
+        /* Custom styling for cards */
+        .dashboard-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        /* Style for the sidebar to ensure it looks distinct */
+        .sidebar {
+            background-color: #f0fdf4; /* Light green tone for 'agri' feel */
+        }
+        /* Utility to hide/show the dropdown */
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Top Navigation Bar (Sticky and Prominent) -->
+    <nav class="bg-white shadow-lg sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Logo/Branding -->
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-2xl font-extrabold text-green-700">FarmDregs</span>
+                </div>
+                `
+                <!-- Main Navigation Links -->
+                <div class="flex">
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="#dashboard-section" class="border-b-2 border-green-600 text-green-700 inline-flex items-center px-1 pt-1 text-base font-semibold">Dashboard</a>
+                        <a href="OrderTrackingPage_Buyer.html" class="border-b-2 border-transparent text-gray-500 hover:border-green-600 hover:text-green-600 inline-flex items-center px-1 pt-1 text-base font-medium">Order History</a>
+                        <a href="guestproductlist2.html" class="border-b-2 border-transparent text-gray-500 hover:border-green-600 hover:text-green-600 inline-flex items-center px-1 pt-1 text-base font-medium">Explore Products</a>
+                    </div>
+                </div>
+                
+                <!-- User/Profile Button with Dropdown -->
+                <div class="ml-4 flex items-center md:ml-6 relative">
+                    <span id="user-display-nav" class="hidden sm:block text-sm font-medium text-gray-700 mr-3"></span>
+                    <button id="profile-menu-button" 
+                            class="p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out" 
+                            aria-expanded="false" 
+                            aria-haspopup="true">
+                        <!-- Lucide User Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-circle"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </button>
+
+                    <!-- Dropdown Menu (hidden by default) -->
+                    <div id="profile-dropdown" class="origin-top-right absolute right-0 mt-3 w-48 rounded-lg shadow-xl bg-white ring-1 ring-black ring-opacity-5 hidden z-30">
+                        <a href="BuyerProfilePage.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg">My Profile</a>
+                        <button onclick="handleLogout()" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg border-t border-gray-100"> Logout </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Welcome Banner (Clear and Readable) -->
+    <div class="bg-gray-800 p-6 sm:p-8 lg:p-10 mb-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-white p-5 sm:p-6 rounded-xl shadow-2xl border-l-4 border-green-500">
+                <h1 id="welcome-message" class="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+                    Welcome back, <span type="text" id="welcome-message1">[User Name]</span>!
+                </h1>
+                <p id="industry-info" class="text-sm sm:text-base text-gray-600 mt-1">
+                    <span type="text" id="industry-info1">Sourcing made easy now.</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <main class="max-w-7xl mx-auto py-0 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Dashboard Section - MADE VISIBLE UPON ARRIVAL -->
+        <section id="dashboard-section" class="mb-12 -mt-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Order Dashboard</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Metric Card 1: Active Orders -->
+                <div class="dashboard-card bg-white p-6 rounded-xl border border-blue-200">
+                    <div class="flex items-center justify-between">
+                        <p class="text-lg font-medium text-blue-600">Active Orders</p>
+                        <!-- Lucide Shopping Cart Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck text-blue-500"><path d="M5 17H3a2 2 0 0 1-2-2V9h20v6a2 2 0 0 1-2 2h-2"/><path d="M12 17V9"/><path d="M12 7h2v2h-2"/><path d="M22 17h-2a2 2 0 0 0-2 2v2H7v-2a2 2 0 0 0-2-2H3"/><circle cx="7" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
+                    </div>
+                    <div class="mt-4">
+                        <p id="active-orders-count" class="text-4xl font-extrabold text-gray-900"><span type="text" id="active-orders-count1">0</span></p>
+                        <p class="text-sm text-gray-500 mt-1">Confirmed and in-progress orders.</p>
+                    </div>
+                </div>
+
+                <!-- Metric Card 2: Pending Orders -->
+                <div class="dashboard-card bg-white p-6 rounded-xl border border-amber-200">
+                    <div class="flex items-center justify-between">
+                        <p class="text-lg font-medium text-amber-600">Pending Confirmation</p>
+                        <!-- Lucide Clock Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock text-amber-500"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="mt-4">
+                        <p id="pending-orders-count" class="text-4xl font-extrabold text-gray-900"><span type="text" id="pending-orders-count1">0</span></p>
+                        <p class="text-sm text-gray-500 mt-1">Awaiting seller/internal confirmation.</p>
+                    </div>
+                </div>
+
+                <!-- Metric Card 3: Quick Access to Order History -->
+                <div class="dashboard-card bg-green-700 p-6 rounded-xl flex flex-col justify-between">
+                    <div>
+                        <p class="text-lg font-bold text-white mb-2">Review All Transactions</p>
+                        <p class="text-sm text-green-200">Check detailed order history and past invoices.</p>
+                    </div>
+                    <button onclick="window.location.href='OrderTrackingPage_Buyer.html'"
+                            class="mt-4 w-full bg-white text-green-800 font-semibold py-3 rounded-lg shadow-md hover:bg-gray-100 transition duration-150">
+                        View Order History
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- Main Content Area: Products and Other Options -->
+        <div class="flex flex-col lg:flex-row gap-8 mt-10">
+            
+            <!-- Column 1: Core Buyer Options -->
+            <div class="lg:w-3/4 bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Procurement Hub</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Product Search Card -->
+                    <div class="card p-6 border border-gray-200 rounded-lg text-center dashboard-card">
+                        <h3 class="text-xl font-semibold text-green-700 mb-2">Search New Materials</h3>
+                        <p class="text-gray-600 mb-4">Find and source new agricultural waste products for your processes.</p>
+                        <button onclick="window.location.href='guestproductlist2.html'"
+                                class="w-full bg-green-600 text-white font-medium py-3 rounded-lg hover:bg-green-700 transition duration-150">
+                            Start Sourcing Now
+                        </button>
+                    </div>
+
+                    <!-- Profile Update Card -->
+                    <div class="card p-6 border border-gray-200 rounded-lg text-center dashboard-card">
+                        <h3 class="text-xl font-semibold text-green-700 mb-2">Manage Profile & Settings</h3>
+                        <p class="text-gray-600 mb-4">Update your industrial details, contact information, and preferences.</p>
+                        <button onclick="window.location.href='BuyerProfilePage.html'"
+                                class="w-full bg-green-600 text-white font-medium py-3 rounded-lg hover:bg-green-700 transition duration-150">
+                            Update Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: Featured Materials Sidebar -->
+            <div class="lg:w-1/4 sidebar p-6 rounded-xl shadow-inner h-fit">
+                <h2 class="text-xl font-semibold text-green-800 mb-4 border-b border-green-300 pb-2">Featured Materials</h2>
+                <p class="text-sm text-green-700 mb-4">Pure waste sourced directly from our verified farm partners.</p>
+                
+                <div class="space-y-4">
+                    <!-- Material Card 1 -->
+                    <div class="bg-white p-3 rounded-lg flex items-center shadow-sm">
+                        <img src="https://placehold.co/40x40/5D9933/ffffff?text=RH" alt="Rice Husk Icon" class="rounded-md mr-3">
+                        <div>
+                            <p class="font-medium text-gray-800">Rice Husk</p>
+                            <p class="text-xs text-gray-500">For energy and construction.</p>
+                        </div>
+                    </div>
+                    <!-- Material Card 2 -->
+                    <div class="bg-white p-3 rounded-lg flex items-center shadow-sm">
+                        <img src="https://placehold.co/40x40/7C6E5C/ffffff?text=BG" alt="Bagasse Icon" class="rounded-md mr-3">
+                        <div>
+                            <p class="font-medium text-gray-800">Sugarcane Bagasse</p>
+                            <p class="text-xs text-gray-500">Ideal for paper and board.</p>
+                        </div>
+                    </div>
+                    <!-- Material Card 3 (New Placeholder) -->
+                    <div class="bg-white p-3 rounded-lg flex items-center shadow-sm">
+                        <img src="https://placehold.co/40x40/94B43B/ffffff?text=CM" alt="Corn Stover Icon" class="rounded-md mr-3">
+                        <div>
+                            <p class="font-medium text-gray-800">Corn Stover</p>
+                            <p class="text-xs text-gray-500">Bioplastics feedstock.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="bg-white mt-12 border-t border-gray-200 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            &copy; 2025 AgriCorn Pro. All rights reserved.
+        </div>
+    </footer>
+    
+    <script>       
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch("currentuserinfoservlet?frompage=buyershomepage",{
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(buyerdata => {
+            	// --- Update Welcome Message ---
+                document.getElementById('welcome-message1').innerText = buyerdata.industryname;
+                document.getElementById('industry-info1').innerText = buyerdata.industrytype;
+
+                // --- Update Navigation User Display ---
+                document.getElementById('user-display-nav').innerText = buyerdata.industryname;
+
+                // --- Update Dashboard Metrics ---
+                document.getElementById('active-orders-count1').innerText = buyerdata.activeorders;
+                document.getElementById('pending-orders-count1').innerText = buyerdata.pendingorders;
+            	
+            })              
+        });
+    </script>
+    
+    <!-- JavaScript to handle dynamic content and interactions -->
+    <script>
+        // Function to toggle the profile dropdown
+        function toggleDropdown() {
+            const dropdown = document.getElementById('profile-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Event listener for the profile menu button
+        document.getElementById('profile-menu-button').addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevents the document click handler from immediately closing it
+            toggleDropdown();
+        });
+
+        // Event listener to close the dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            const dropdown = document.getElementById('profile-dropdown');
+            const button = document.getElementById('profile-menu-button');
+            
+            // Check if the click is outside both the dropdown and the button
+            if(!dropdown.contains(event.target) && !button.contains(event.target)) {
+                if(!dropdown.classList.contains('hidden')) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        });
+        
+        // Placeholder function for handling logout
+        function handleLogout() {
+            // In a real application, you would perform an API call to clear the session
+            // For this demonstration, we redirect to a login page (l.html)
+            console.log('Logging out user...');
+            alert('Logged out successfully!'); // Using alert for demo purposes as per standard HTML constraints
+            window.location.href = 'loginpage.html';
+        }
+    </script>
+</body>
+</html>

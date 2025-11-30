@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders - AgriWaste Trading</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f2fbf6 0%, #eefaf4 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(12,125,83,0.10);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0c7d53, #83c54a);
+      color: white;
+      padding: 24px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .header h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: white;
+      color: #0c7d53;
+    }
+
+    .btn-primary:hover {
+      background: #f0f8f5;
+      transform: translateY(-1px);
+    }
+
+    .btn-cancel {
+      background: #ef4444;
+      color: white;
+      font-size: 0.9rem;
+      padding: 8px 14px;
+    }
+
+    .btn-cancel:hover {
+      background: #dc2626;
+    }
+
+    .btn-cancel:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .btn-details {
+      background: #3b82f6;
+      color: white;
+      font-size: 0.9rem;
+      padding: 8px 14px;
+    }
+
+    .btn-details:hover {
+      background: #2563eb;
+    }
+
+    .filters-section {
+      padding: 24px 30px;
+      background: #f8fbf9;
+      border-bottom: 1px solid #e5edf0;
+    }
+
+    .filters-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .filter-group input,
+    .filter-group select,
+    .filter-group textarea {
+      padding: 10px 12px;
+      border: 1px solid #cfe7da;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus,
+    .filter-group textarea:focus {
+      border-color: #83c54a;
+      box-shadow: 0 0 0 3px rgba(131, 197, 74, 0.1);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .btn-filter {
+      background: #0c7d53;
+      color: white;
+    }
+
+    .btn-filter:hover {
+      background: #0a6544;
+    }
+
+    .btn-reset {
+      background: #64748b;
+      color: white;
+    }
+
+    .btn-reset:hover {
+      background: #475569;
+    }
+
+    .orders-stats {
+      padding: 20px 30px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      background: #fafbfc;
+      border-bottom: 1px solid #e5edf0;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 150px;
+      padding: 15px;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #e5edf0;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0c7d53;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 5px;
+    }
+
+    .orders-content {
+      padding: 30px;
+    }
+
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .orders-table thead {
+      background: #f1f5f9;
+    }
+
+    .orders-table th {
+      padding: 14px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #1e293b;
+      border-bottom: 2px solid #e5edf0;
+    }
+
+    .orders-table td {
+      padding: 16px 12px;
+      border-bottom: 1px solid #e5edf0;
+    }
+
+    .orders-table tbody tr:hover {
+      background: #f8fbf9;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-delivered {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-shipped {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status-processing {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .no-orders {
+      text-align: center;
+      padding: 60px 20px;
+      color: #64748b;
+    }
+
+    .no-orders svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      border-bottom: 1px solid #e5edf0;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 1;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: #f1f5f9;
+    }
+
+    .modal-body {
+      padding: 24px;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .detail-value {
+      color: #475569;
+      text-align: right;
+    }
+
+    .detail-section {
+      margin-bottom: 24px;
+    }
+
+    .detail-section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0c7d53;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e5edf0;
+    }
+
+    .tracking-timeline {
+      position: relative;
+      padding-left: 30px;
+    }
+
+    .tracking-step {
+      position: relative;
+      padding-bottom: 24px;
+    }
+
+    .tracking-step:last-child {
+      padding-bottom: 0;
+    }
+
+    .tracking-step::before {
+      content: '';
+      position: absolute;
+      left: -30px;
+      top: 8px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #d1fae5;
+      border: 3px solid #0c7d53;
+    }
+
+    .tracking-step::after {
+      content: '';
+      position: absolute;
+      left: -25px;
+      top: 20px;
+      width: 2px;
+      height: calc(100% - 12px);
+      background: #e5edf0;
+    }
+
+    .tracking-step:last-child::after {
+      display: none;
+    }
+
+    .tracking-step.inactive::before {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .tracking-date {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding: 16px 24px;
+      background: #f8fbf9;
+      border-top: 1px solid #e5edf0;
+    }
+
+    .btn-modal-cancel {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-modal-cancel:hover {
+      background: #d1d5db;
+    }
+
+    .btn-modal-confirm {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-modal-confirm:hover {
+      background: #dc2626;
+    }
+
+    .nav-footer {
+      padding: 20px 30px;
+      background: #f8fbf9;
+      border-top: 1px solid #e5edf0;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .orders-table {
+        font-size: 0.9rem;
+      }
+
+      .orders-table th,
+      .orders-table td {
+        padding: 10px 8px;
+      }
+
+      .order-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+      }
+
+      .modal {
+        max-width: 95%;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .orders-table thead {
+        display: none;
+      }
+
+      .orders-table tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #e5edf0;
+        border-radius: 8px;
+        padding: 10px;
+      }
+
+      .orders-table td {
+        display: block;
+        text-align: right;
+        padding: 8px 10px;
+        border: none;
+      }
+
+      .orders-table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: 600;
+        color: #1e293b;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h2>📦 My Orders</h2>
+      <div class="header-actions">
+        <a href="BuyersHomePage.html" class="btn btn-primary">🏠 Home</a>
+        <a href="BuyerProfilePage.html" class="btn btn-primary">👤 Profile</a>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filters-row">
+        <div class="filter-group">
+          <label for="filterStatus">Status</label>
+          <select id="filterStatus">
+            <option value="">All Statuses</option>
+            <option value="placed">Pending</option>
+            <option value="accepted">Processing</option>
+            <option value="Shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filterProduct">Product Name</label>
+          <input type="text" id="filterProduct" placeholder="Search by product...">
+        </div>
+
+        <div class="filter-group">
+          <label for="filterDateFrom">From Date</label>
+          <input type="date" id="filterDateFrom">
+        </div>
+
+        <div class="filter-group">
+          <label for="filterDateTo">To Date</label>
+          <input type="date" id="filterDateTo">
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-filter" id="applyFilters">Apply Filters</button>
+        <button class="btn btn-reset" id="resetFilters">Reset</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="orders-stats">
+      <div class="stat-card">
+        <div class="stat-value" id="totalOrders">0</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="pendingOrders">0</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="deliveredOrders">0</div>
+        <div class="stat-label">Delivered</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalSpent">₹0</div>
+        <div class="stat-label">Total Spent</div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="orders-content">
+      <table class="orders-table" id="ordersTable">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Payment Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="orders">
+        </tbody>
+      </table>
+      <div class="no-orders" id="noOrders" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+        </svg>
+        <h3>No orders found</h3>
+        <p>Try adjusting your filters or start shopping!</p>
+      </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <div class="nav-footer">
+      <a href="BuyersHomePage.html" class="btn btn-primary">Back to Home</a>
+      <a href="guestproductlist2.html" class="btn btn-primary">Continue Shopping</a>
+    </div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div class="modal-backdrop" id="detailsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Order Details</h3>
+        <button class="modal-close" id="closeDetailsModal">&times;</button>
+      </div>
+      <div class="modal-body" id="detailsModalBody">
+        <!-- Details will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancel Order Modal -->
+  <div class="modal-backdrop" id="cancelModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Cancel Order</h3>
+        <button class="modal-close" id="closeCancelModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to cancel this order?</p>
+        <p><strong>Order ID:</strong> <span id="cancelOrderId"></span></p>
+        <p><strong>Product:</strong> <span id="cancelProduct"></span></p>
+        <div class="filter-group" style="margin-top: 12px;">
+          <label for="cancelReason">Reason for cancellation</label>
+          <textarea id="cancelReason" rows="3" placeholder="Enter reason (required)"></textarea>
+        </div>
+        <p style="color: #dc2626; margin-top: 15px;">⚠️ This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-modal-cancel" id="modalCancelBtn">No, Keep Order</button>
+        <button class="btn btn-modal-confirm" id="modalConfirmBtn" disabled>Yes, Cancel Order</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample orders data with additional details (replace with fetch from your servlet)
+    let allOrders = [
+      /*{
+        id: 101,
+        date: '2025-10-15',
+        product: 'Sugarcane Bagasse',
+        quantity: '200kg',
+        price: 3000,
+        status: 'Delivered',
+        farmer: 'Ravi Kumar',
+        farmerLocation: 'Guntur, Andhra Pradesh',
+        deliveryAddress: '123 Main Street, Hyderabad, Telangana 500001',
+        paymentMethod: 'UPI',
+        trackingNumber: 'TRK123456789',
+        estimatedDelivery: '2025-10-18',
+        tracking: [
+          { status: 'Order Placed', date: '2025-10-15 10:30 AM', completed: true },
+          { status: 'Order Confirmed', date: '2025-10-15 11:45 AM', completed: true },
+          { status: 'Shipped', date: '2025-10-16 09:00 AM', completed: true },
+          { status: 'Out for Delivery', date: '2025-10-17 08:30 AM', completed: true },
+          { status: 'Delivered', date: '2025-10-17 02:15 PM', completed: true }
+        ]
+      },
+      {
+        id: 102,
+        date: '2025-10-16',
+        product: 'Coconut Husk',
+        quantity: '100kg',
+        price: 1200,
+        status: 'Pending',
+        farmer: 'A. Reddy',
+        farmerLocation: 'Karimnagar, Telangana',
+        deliveryAddress: '456 Park Avenue, Vijayawada, Andhra Pradesh 520001',
+        paymentMethod: 'Credit Card',
+        trackingNumber: 'TRK987654321',
+        estimatedDelivery: '2025-10-20',
+        tracking: [
+          { status: 'Order Placed', date: '2025-10-16 02:20 PM', completed: true },
+          { status: 'Order Confirmed', date: '', completed: false },
+          { status: 'Shipped', date: '', completed: false },
+          { status: 'Out for Delivery', date: '', completed: false },
+          { status: 'Delivered', date: '', completed: false }
+        ]
+      },
+      {
+        id: 103,
+        date: '2025-10-17',
+        product: 'Rice Husk',
+        quantity: '150kg',
+        price: 1800,
+        status: 'Shipped',
+        farmer: 'B. Singh',
+        farmerLocation: 'Indore, Madhya Pradesh',
+        deliveryAddress: '789 Lake Road, Warangal, Telangana 506001',
+        paymentMethod: 'Net Banking',
+        trackingNumber: 'TRK456789123',
+        estimatedDelivery: '2025-10-19',
+        tracking: [
+          { status: 'Order Placed', date: '2025-10-17 11:00 AM', completed: true },
+          { status: 'Order Confirmed', date: '2025-10-17 12:30 PM', completed: true },
+          { status: 'Shipped', date: '2025-10-18 07:00 AM', completed: true },
+          { status: 'Out for Delivery', date: '', completed: false },
+          { status: 'Delivered', date: '', completed: false }
+        ]
+      },
+      {
+        id: 104,
+        date: '2025-10-14',
+        product: 'Coffee Husk',
+        quantity: '80kg',
+        price: 1600,
+        status: 'Processing',
+        farmer: 'J. Gowda',
+        farmerLocation: 'Belagavi, Karnataka',
+        deliveryAddress: '321 Hill View, Bangalore, Karnataka 560001',
+        paymentMethod: 'Cash on Delivery',
+        trackingNumber: 'TRK321654987',
+        estimatedDelivery: '2025-10-19',
+        tracking: [
+          { status: 'Order Placed', date: '2025-10-14 03:15 PM', completed: true },
+          { status: 'Order Confirmed', date: '2025-10-14 04:00 PM', completed: true },
+          { status: 'Shipped', date: '', completed: false },
+          { status: 'Out for Delivery', date: '', completed: false },
+          { status: 'Delivered', date: '', completed: false }
+        ]
+      },
+      {
+        id: 105,
+        date: '2025-10-10',
+        product: 'Tea Stalk',
+        quantity: '60kg',
+        price: 900,
+        status: 'Delivered',
+        farmer: 'P. Das',
+        farmerLocation: 'Bardhaman, West Bengal',
+        deliveryAddress: '555 Garden Street, Kolkata, West Bengal 700001',
+        paymentMethod: 'Debit Card',
+        trackingNumber: 'TRK654987321',
+        estimatedDelivery: '2025-10-13',
+        tracking: [
+          { status: 'Order Placed', date: '2025-10-10 09:00 AM', completed: true },
+          { status: 'Order Confirmed', date: '2025-10-10 10:15 AM', completed: true },
+          { status: 'Shipped', date: '2025-10-11 08:00 AM', completed: true },
+          { status: 'Out for Delivery', date: '2025-10-12 07:30 AM', completed: true },
+          { status: 'Delivered', date: '2025-10-12 01:45 PM', completed: true }
+        ]
+      }*/
+    ];
+
+    let filteredOrders = [...allOrders];
+    let currentCancelOrder = null;
+
+    
+    
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      fetch('ordertrackingservletbuyer', { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+          allOrders = Array.isArray(data) ? data : [];
+          filteredOrders = [...allOrders];
+          renderOrders(filteredOrders);
+          updateStats(filteredOrders);
+          setupEventListeners();
+        })
+        .catch(err => {
+          console.error('Failed to load orders', err);
+          allOrders = [];
+          filteredOrders = [];
+          renderOrders([]);
+          updateStats([]);
+          setupEventListeners();
+        });
+    });
+
+    function setupEventListeners() {
+      document.getElementById('applyFilters').addEventListener('click', applyFilters);
+      document.getElementById('resetFilters').addEventListener('click', resetFilters);
+      document.getElementById('closeDetailsModal').addEventListener('click', closeDetailsModal);
+      document.getElementById('closeCancelModal').addEventListener('click', closeCancelModal);
+      document.getElementById('modalCancelBtn').addEventListener('click', closeCancelModal);
+      document.getElementById('modalConfirmBtn').addEventListener('click', confirmCancelOrder);
+      
+      // Enable/disable confirm based on reason
+      const reasonInput = document.getElementById('cancelReason');
+      if (reasonInput) {
+        reasonInput.addEventListener('input', () => {
+          const btn = document.getElementById('modalConfirmBtn');
+          btn.disabled = !reasonInput.value.trim();
+        });
+      }
+      
+      // Close modals when clicking backdrop
+      document.getElementById('detailsModal').addEventListener('click', (e) => {
+        if(e.target.id === 'detailsModal') closeDetailsModal();
+      });
+      document.getElementById('cancelModal').addEventListener('click', (e) => {
+        if(e.target.id === 'cancelModal') closeCancelModal();
+      });
+
+      // Delegated handler to ensure buttons always work after re-renders
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-cancel-id]');
+        if (btn) {
+          e.preventDefault();
+          const id = btn.getAttribute('data-cancel-id');
+          openCancelModal(id);
+        }
+      });
+    }
+
+    function renderOrders(orders) {
+      const tbody = document.getElementById('orders');
+      const noOrders = document.getElementById('noOrders');
+      
+      tbody.innerHTML = '';
+
+      if(!orders || orders.length === 0) {
+        noOrders.style.display = 'block';
+        document.querySelector('.orders-table').style.display = 'none';
+        return;
+      }
+
+      noOrders.style.display = 'none';
+      document.querySelector('.orders-table').style.display = 'table';
+
+      orders.forEach(order => {
+        const row = document.createElement('tr');
+        const canCancel = ['placed', 'accepted'].includes(String(order.status||'').toLowerCase());
+
+        row.innerHTML = `
+          <td data-label="Order ID">#${order.id}</td>
+          <td data-label="Date">${formatDate(order.date)}</td>
+          <td data-label="Product"><strong>${order.product}</strong></td>
+          <td data-label="Quantity">${order.quantity}</td>
+          <td data-label="Price"><strong>₹${Number(order.price||0).toLocaleString()}</strong></td>
+          <td data-label="Status"><span class="status-badge status-${String(order.status||'').toLowerCase()}">${order.status}</span></td>
+          <td data-label="Payment Status"><span class="status-badge status-${String(order.paymentstatus||'').toLowerCase()}">${order.paymentstatus}</span></td>
+          <td data-label="Actions">
+            <div class="order-actions">
+              <button class="btn btn-details" data-details-id="${order.id}">View Details</button>
+              <button class="btn btn-cancel" data-cancel-id="${order.id}" ${canCancel ? '' : 'disabled'}>Cancel Order</button>
+            </div>
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+
+      // Bind actions after rows are added
+      tbody.querySelectorAll('[data-details-id]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = btn.getAttribute('data-details-id');
+          viewOrderDetails(id);
+        });
+      });
+      tbody.querySelectorAll('[data-cancel-id]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = btn.getAttribute('data-cancel-id');
+          openCancelModal(id);
+        });
+      });
+    }
+
+    function viewOrderDetails(orderId) {
+      const order = allOrders.find(o => String(o.id) === String(orderId));
+      if(!order) return;
+
+      const timeline = Array.isArray(order.tracking) ? order.tracking : [];
+      const trackingHtml = timeline.map(step => `
+        <div class="tracking-step ${step.completed ? '' : 'inactive'}">
+          <strong>${step.status}</strong>
+          ${step.date ? `<div class="tracking-date">${step.date}</div>` : '<div class="tracking-date">Pending</div>'}
+        </div>
+      `).join('');
+
+      const detailsHtml = `
+        <div class="detail-section">
+          <div class="detail-section-title">Order Information</div>
+          <div class="detail-row">
+            <span class="detail-label">Order ID</span>
+            <span class="detail-value">#${order.id}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Order Date</span>
+            <span class="detail-value">${formatDate(order.date)}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status</span>
+            <span class="detail-value"><span class="status-badge status-${String(order.status||'').toLowerCase()}">${order.status}</span></span>
+          </div>
+          <div class="detail-row">
+          <span class="detail-label">Payment Status</span>
+          <span class="detail-value"><span class="status-badge status-${String(order.paymentstatus||'').toLowerCase()}">${order.paymentstatus}</span></span>
+        </div>
+          <div class="detail-row">
+            <span class="detail-label">Tracking Number</span>
+            <span class="detail-value">${order.trackingNumber || 'N/A'}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Est. Delivery</span>
+            <span class="detail-value">${order.estimatedDelivery ? formatDate(order.estimatedDelivery) : 'N/A'}</span>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">Product Details</div>
+          <div class="detail-row">
+            <span class="detail-label">Product</span>
+            <span class="detail-value"><strong>${order.product}</strong></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Quantity</span>
+            <span class="detail-value">${order.quantity}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Price</span>
+            <span class="detail-value"><strong>₹${Number(order.price||0).toLocaleString()}</strong></span>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">Farmer Details</div>
+          <div class="detail-row">
+            <span class="detail-label">Farmer Name</span>
+            <span class="detail-value">${order.farmer || 'N/A'}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Location</span>
+            <span class="detail-value">${order.farmerLocation || 'N/A'}</span>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">Delivery Details</div>
+          <div class="detail-row">
+            <span class="detail-label">Delivery Address</span>
+            <span class="detail-value">${order.deliveryAddress || 'N/A'}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Payment Method</span>
+            <span class="detail-value">${order.paymentMethod || 'N/A'}</span>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">Order Tracking</div>
+          <div class="tracking-timeline">
+            ${trackingHtml || '<div class="tracking-step inactive"><strong>No tracking updates</strong></div>'}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('detailsModalBody').innerHTML = detailsHtml;
+      const modal = document.getElementById('detailsModal');
+      if(modal) modal.classList.add('active');
+    }
+
+    function closeDetailsModal() {
+      const modal = document.getElementById('detailsModal');
+      if(modal) modal.classList.remove('active');
+      const body = document.getElementById('detailsModalBody');
+      if(body) body.innerHTML = '';
+    }
+
+    function applyFilters() {
+      const statusVal = String(document.getElementById('filterStatus').value || '').toLowerCase();
+      const productVal = String(document.getElementById('filterProduct').value || '').toLowerCase().trim();
+      const dateFrom = document.getElementById('filterDateFrom').value;
+      const dateTo = document.getElementById('filterDateTo').value;
+
+      filteredOrders = allOrders.filter(order => {
+        const statusOk = !statusVal || String(order.status||'').toLowerCase() === statusVal;
+        const productOk = !productVal || String(order.product||'').toLowerCase().includes(productVal);
+        let fromOk = true, toOk = true;
+        if(dateFrom) {
+          const od = new Date(order.date);
+          const fd = new Date(dateFrom);
+          fromOk = od.toString() !== 'Invalid Date' && od >= fd;
+        }
+        if(dateTo) {
+          const od = new Date(order.date);
+          const td = new Date(dateTo);
+          toOk = od.toString() !== 'Invalid Date' && od <= td;
+        }
+        return statusOk && productOk && fromOk && toOk;
+      });
+
+      renderOrders(filteredOrders);
+      updateStats(filteredOrders);
+    }
+
+    function resetFilters() {
+      document.getElementById('filterStatus').value = '';
+      document.getElementById('filterProduct').value = '';
+      document.getElementById('filterDateFrom').value = '';
+      document.getElementById('filterDateTo').value = '';
+      
+      filteredOrders = [...allOrders];
+      renderOrders(allOrders);
+      updateStats(allOrders);
+    }
+
+    function updateStats(orders) {
+      const total = orders.length;
+      const pending = orders.filter(o => o.status === 'Pending').length;
+      const delivered = orders.filter(o => o.status === 'Delivered').length;
+      const totalSpent = orders.reduce((sum, o) => sum + o.price, 0);
+
+      document.getElementById('totalOrders').textContent = total;
+      document.getElementById('pendingOrders').textContent = pending;
+      document.getElementById('deliveredOrders').textContent = delivered;
+      document.getElementById('totalSpent').textContent = '₹' + totalSpent.toLocaleString();
+    }
+
+    function openCancelModal(orderId) {
+      const order = allOrders.find(o => String(o.id) === String(orderId));
+      if(!order) return;
+
+      currentCancelOrder = order;
+      document.getElementById('cancelOrderId').textContent = '#' + order.id;
+      document.getElementById('cancelProduct').textContent = order.product;
+      const reasonInput = document.getElementById('cancelReason');
+      if (reasonInput) reasonInput.value = '';
+      const confirmBtn = document.getElementById('modalConfirmBtn');
+      if (confirmBtn) confirmBtn.disabled = true;
+      document.getElementById('cancelModal').classList.add('active');
+    }
+
+    function closeCancelModal() {
+      document.getElementById('cancelModal').classList.remove('active');
+      currentCancelOrder = null;
+    }
+
+    async function confirmCancelOrder() {
+      if(!currentCancelOrder) return;
+
+      const reasonEl = document.getElementById('cancelReason');
+      const reason = (reasonEl && reasonEl.value ? reasonEl.value.trim() : '');
+      if(!reason) {
+        alert('Please provide a reason for cancellation.');
+        return;
+      }
+
+      const btn = document.getElementById('modalConfirmBtn');
+      const prevText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Cancelling...';
+
+      try {
+        const params = new URLSearchParams({
+          orderid: String(currentCancelOrder.id),
+          from: 'buyerpage',
+          reason
+        });
+        const response = await fetch('cancelorderservlet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
+        });
+
+        if(response.ok) {
+          const order = allOrders.find(o => String(o.id) === String(currentCancelOrder.id));
+          if(order) {
+            order.status = 'Cancelled';
+          }
+          renderOrders(filteredOrders);
+          updateStats(filteredOrders);
+          closeCancelModal();
+          alert('Order #' + currentCancelOrder.id + ' has been cancelled successfully.');
+        } else {
+          const text = await response.text().catch(() => '');
+          alert(text || 'Failed to cancel order. Please try again.');
+        }
+      } catch (err) {
+        console.error('Cancel order failed', err);
+        alert('Network error. Please try again.');
+      } finally {
+        btn.textContent = prevText;
+        btn.disabled = false;
+      }
+    }
+
+    function formatDate(dateStr) {
+      if(!dateStr) return 'N/A';
+      const date = new Date(dateStr);
+      if(date.toString() === 'Invalid Date') return String(dateStr);
+      return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    // Expose functions if inline handlers are cached somewhere
+    window.viewOrderDetails = viewOrderDetails;
+    window.openCancelModal = openCancelModal;
+  </script>
+</body>
+</html>

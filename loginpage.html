@@ -1,0 +1,220 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width,initial-scale=1" /> <title>FarmDregs — Login</title> <meta name="color-scheme" content="light" /> <style> :root{ --g1:#0c7d53; --g2:#83c54a; --ink:#13201a; --muted:#5f7c6e; --line:#e2efe7; --surface:#ffffff; --bg-soft:#f5faf8; --focus:#bde7c8; --shadow:0 12px 34px rgba(12,125,83,0.14); --appbar:#0f1318; --appbar-ink:#eaf2ff; --link:#0e7c53; } *{box-sizing:border-box} html,body{height:100%} body{ margin:0; font-family: Inter, system-ui, "Segoe UI", Roboto, Arial, sans-serif; color:var(--ink); background: radial-gradient(1200px 600px at 80% 10%, #e9f8f0 0%, #f7fcfa 50%, #ffffff 100%), linear-gradient(135deg, #f2fbf6 0%, #eefaf4 100%); }
+/* Top bar with brand */
+body{
+background-image:url(loginpagebackgroundimage.jpg);
+}
+.appbar{
+  position:sticky; top:0; z-index:5;
+  background:var(--appbar); color:var(--appbar-ink);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  
+}
+.appbar-inner{
+  width:min(1200px,94vw);
+  margin:auto;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 0;
+  
+}
+.brand{ display:flex; align-items:center; gap:12px; 
+}
+.brand-logo{
+  width:200px; height:100px; border-radius:8px; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--g2), var(--g1));
+  box-shadow:0 6px 16px rgba(12,125,83,0.22);
+  
+  
+}
+.brand-logo img{ width:100%; height:100%; object-fit:cover; }
+.brand-title{ margin:0; font-size:1.06rem; letter-spacing:.2px; color:#e7eefc; font-weight:800; }
+
+/* Layout: hero left, login card right (on desktop); stacked on mobile */
+.shell{
+  width:min(1200px,94vw);
+  margin:24px auto;
+  display:grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap:28px;
+  align-items:center;
+}
+@media (max-width: 980px){
+  .shell{ grid-template-columns: 1fr; }
+}
+
+/* Left hero */
+.hero{
+  background: linear-gradient(135deg, #f3fbf6, #ffffff);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:22px;
+  box-shadow:0 10px 28px rgba(12,125,83,0.08);
+  
+}
+.hero-head{
+  display:flex; align-items:center; gap:14px; margin-bottom:10px;
+}
+.hero-logo{
+  width:500px; height:72px; border-radius:12px; overflow:hidden; background:#fff; border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+}
+.hero-logo img{ width:150px; height:160px; object-fit:contain; }
+.hero h1{ margin:0; font-size:1.35rem; color:#0c7d53; }
+.hero p{ margin:.4rem 0 0; color:#4d6a5e; line-height:1.5; }
+.hero-bullets{ margin:.8rem 0 0; color:#3c5b4f; }
+.hero-bullets li{ margin:.3rem 0; }
+
+/* Login card */
+.login-card{
+  margin-left:auto; /* right align on wide screens */
+  width:min(440px, 100%);
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:22px 20px 18px;
+}
+@media (max-width:980px){
+  .login-card{ margin:0 auto; } /* center on smaller screens */
+}
+
+.login-brand{ display:flex; gap:12px; align-items:center; margin-bottom:14px; }
+.login-logo{
+  width:42px; height:42px; border-radius:10px; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  background:#fff; border:1px solid var(--line);
+}
+.login-logo img{ width:100%; height:100%; object-fit:contain; }
+.login-title{ margin:0; font-size:1.08rem; color:var(--g1); font-weight:800; }
+.login-sub{ font-size:.92rem; color:var(--muted); }
+
+form{ margin-top:6px; }
+.field{ margin:12px 0; }
+.field label{
+  display:block; margin:0 0 6px; font-weight:600; color:#335a49; font-size:.95rem;
+}
+.input-wrap{
+  position:relative; display:flex; align-items:center; gap:8px;
+  border:1px solid #cfe7da; background:#fff; border-radius:12px;
+  padding:10px 12px;
+  transition:border .15s, box-shadow .15s, background .15s;
+}
+.input-wrap:focus-within{ border-color:var(--g2); box-shadow:0 0 0 4px var(--focus); }
+.input-wrap .icon{ opacity:.75; }
+.input-wrap input{
+  border:none; outline:none; flex:1; font-size:1rem; color:var(--ink); background:transparent;
+}
+.peek{
+  border:none; outline:none; cursor:pointer; background:transparent; font-size:1rem; opacity:.7;
+}
+.peek:hover{ opacity:1; }
+
+.roles{
+  display:flex; gap:10px; flex-wrap:wrap;
+}
+.role-pill{
+  display:flex; align-items:center; gap:8px;
+  background:#f2f7f4; border:1px solid #dbefe4; color:#296749;
+  padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none;
+  font-weight:600;
+}
+.role-pill input{ accent-color:var(--g1); }
+.role-pill.selected{ background:#eaffeb; border:2px solid var(--g2); color:#0c7d53; }
+
+.row{ display:flex; align-items:center; }
+.between{ justify-content:space-between; }
+.muted{ color:#5d6a7f; }
+.link, .link-strong{ color:var(--link); text-decoration:none; font-weight:600; }
+.link:hover, .link-strong:hover{ text-decoration:underline; }
+
+.btn-primary{
+  width:100%; margin-top:10px;
+  background:linear-gradient(135deg, var(--g1), var(--g2));
+  color:#fff; font-weight:800; border:none; border-radius:12px;
+  padding:12px 14px; font-size:1.05rem; cursor:pointer;
+  box-shadow:0 6px 18px rgba(12,125,83,0.18);
+  transition: transform .08s ease, box-shadow .15s ease;
+}
+.btn-primary:active{ transform:translateY(1px); }
+.btn-primary:hover{ box-shadow:0 8px 22px rgba(12,125,83,0.26); }
+
+.divider{ position:relative; text-align:center; margin:14px 0 8px; color:#6b8b7d; }
+.divider:before, .divider:after{
+  content:""; position:absolute; top:50%; width:40%; height:1px; background:#e1efe7;
+}
+.divider:before{ left:0; } .divider:after{ right:0; }
+.divider span{ background:var(--surface); padding:0 8px; position:relative; }
+
+.form-error{
+  margin-top:10px;
+  background:#fff8ea; color:#a04a11;
+  border-left:4px solid #f3b24c; border-radius:8px;
+  padding:8px 10px; font-size:.95rem;
+  display:none;
+}
+
+/* Footer note */
+.foot{
+  width:min(1200px,94vw);
+  margin:6px auto 24px;
+  text-align:center; color:#6a7a7a; font-size:.9rem;
+}
+</style> </head> <body> <!-- Top brand bar --> <header class="appbar"> <div class="appbar-inner"> <div class="brand"> <div class="brand-logo" aria-hidden="true"> <!-- Optional tiny logo in bar --> <img src="farmdregslogo1.jpeg" alt="FarmDregs logo"> </div> <h1 class="brand-title">FarmDregs</h1> </div> <div class="muted" style="font-size:.9rem;">AgriWaste marketplace for farmers and industrial buyers</div> </div> </header> <!-- Main content --> <main class="shell"> <!-- Hero/Branding (left) --> <section class="hero" aria-label="About FarmDregs"> <div class="hero-head"> </div><h1>Welcome to FarmDregs</h1><p>Connect farmers’ agricultural residues to industrial buyers for biomass, biofuels, compost, and fertilizers.</p><ul class="hero-bullets"> <li>Transparent, demand-based pricing across regions.</li> <li>Region-aware listings for lower logistics costs.</li> <li>Trusted platform for farmers and buyers.</li> </ul></section>
+
+
+<!-- Login card (right / centered on small screens) -->
+<section class="login-card" aria-label="Login">
+  <div class="login-brand">
+    <div class="login-logo">
+      <img src="farmdregslogo.jpeg" alt="FarmDregs">
+    </div>
+    </div>
+      <h2 class="login-title">Sign in to FarmDregs</h2>
+      <div class="login-sub">Use your User ID (not email)</div>
+   
+
+  <form id="loginform" action="logincredentialverificationservlet" method="post" autocomplete="off" novalidate>
+    <div class="field">
+      <label for="userid">User ID</label>
+      <div class="input-wrap">
+        <span class="icon" aria-hidden="true">👤</span>
+        <input type="text" id="userid" name="username" placeholder="Enter your User ID" required autocomplete="username" spellcheck="false">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <div class="input-wrap">
+        <span class="icon" aria-hidden="true">🔒</span>
+        <input type="password" id="password" name="password" placeholder="Password" required autocomplete="current-password">
+        <button type="button" class="peek" aria-label="Show password" title="Show/Hide">👁️</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Role</label>
+      <div class="roles" role="radiogroup" aria-label="Choose your role">
+        <label class="role-pill selected"><input type="radio" name="role" value="seller" checked> Farmer</label>
+        <label class="role-pill"><input type="radio" name="role" value="buyer"> Buyer</label>
+      </div>
+    </div>
+
+    <div class="row between" style="margin-top:4px;">
+      <a class="link" href="ForgotUserIDPage.html">Forgot User ID?</a>
+      <a class="link" href="ForgotPasswordPage.html">Forgot Password?</a>
+    </div>
+
+    <button class="btn-primary" type="submit">Login</button>
+
+    <div class="divider"><span>or</span></div>
+
+    <div class="row" style="justify-content:center; gap:8px;">
+      <span class="muted">New to FarmDregs?</span>
+      <a class="link-strong" href="index.html">Create account</a>
+    </div>
+
+    <div id="form-error" class="form-error" role="alert" aria-live="polite"></div>
+  </form>
+</section>
+
+</main> <footer class="foot"> © <span id="year"></span> FarmDregs. All rights reserved. </footer> <script> // Year document.getElementById('year').textContent = new Date().getFullYear(); // Role pills styling document.querySelectorAll('.role-pill input').forEach(radio=>{ radio.addEventListener('change', ()=>{ document.querySelectorAll('.role-pill').forEach(p=>p.classList.remove('selected')); radio.closest('.role-pill').classList.add('selected'); }); }); // Show/Hide password (function(){ const peek = document.querySelector('.peek'); const pwd = document.getElementById('password'); if(peek && pwd){ peek.addEventListener('click', ()=>{ const isPwd = pwd.type === 'password'; pwd.type = isPwd ? 'text' : 'password'; peek.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password'); }); } })(); // Basic client-side validation (keep server-side validation as source of truth) (function(){ const form = document.getElementById('loginform'); const errorBox = document.getElementById('form-error'); form.addEventListener('submit', (e)=>{ errorBox.style.display = 'none'; const uid = (document.getElementById('userid')?.value || '').trim(); const pass = (document.getElementById('password')?.value || '').trim(); const roleChecked = Array.from(form.role || []).some(r => r.checked); if(!uid){ e.preventDefault(); showErr("User ID is required."); return; } if(!pass){ e.preventDefault(); showErr("Password is required."); return; } if(!roleChecked){ e.preventDefault(); showErr("Please select a role (Farmer or Buyer)."); return; } }); function showErr(msg){ errorBox.textContent = msg; errorBox.style.display = 'block'; errorBox.scrollIntoView({behavior:'smooth', block:'nearest'}); } })(); </script> </body> </html>

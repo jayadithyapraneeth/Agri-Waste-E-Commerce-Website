@@ -116,14 +116,12 @@
     document.addEventListener("DOMContentLoaded", function() {
       // Fetch orders from the server
       const tbody = document.querySelector('#ordersTable tbody');
-      fetch("ordertrackingservletfarmer",
-    		  {method: 'GET'
-   })
+      fetch("ordertrackingservletfarmer",{method: 'GET'})
         .then(response => response.json())
         .then(data => {
           tbody.innerHTML = ''; // Clear existing rows
 
-          if (data.length === 0 || !data) {
+          if(data.length === 0 || !data) {
         	  const row = document.createElement('tr');
             row.innerHTML = `<td colspan='10' class='empty'>No orders received yet. When a buyer places an order, it will appear here.</td>`;
             tbody.appendChild(row);

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - AgriCorn Pro</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .section-header {
+            border-left: 4px solid #059669; /* Green marker */
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+        .detail-item span {
+            font-weight: 500;
+        }
+        .checkout-button {
+            transition: all 0.2s;
+        }
+        .checkout-button:hover {
+            box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.5);
+            transform: translateY(-1px);
+        }
+        .product-item {
+            padding: 0.75rem 0;
+            border-top: 1px dashed #e5e7eb;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="#" class="text-2xl font-bold text-gray-800">Checkout</a>
+            <span class="text-green-700 font-medium">Secure Payment</span>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Main Checkout Layout (2 Columns) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Order Details, Address -->
+            <div class="lg:col-span-2 space-y-8">
+
+                <!-- 1. Product Details (simplified, no seller grouping) -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-600">
+                    <h2 id="products-header" class="text-2xl font-bold text-gray-800 section-header">Loading Products...</h2>
+                    <div id="seller-product-details" class="space-y-4">
+                        <div class="text-gray-500 text-center py-8" id="loading-indicator">Fetching order data...</div>
+                    </div>
+                </div>
+
+                <!-- 2. Delivery Address (Editable Form) -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-800 section-header">Delivery & Contact</h2>
+                    
+                    <form id="delivery-form" class="space-y-4 text-gray-600">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Contact Person -->
+                            <div>
+                                <label for="contact-name" class="block text-sm font-medium text-gray-700">Contact Person / Industry</label>
+                                <input type="text" id="contact-name" value="" placeholder="Loading..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" onchange="handleAddressChange()">
+                            </div>
+                            <!-- Contact Number -->
+                            <div>
+                                <label for="contact-phone" class="block text-sm font-medium text-gray-700">Contact Number</label>
+                                <input type="tel" id="contact-phone" value="" placeholder="Loading..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" onchange="handleAddressChange()">
+                            </div>
+                        </div>
+                        
+                        <!-- Street/Line 1 -->
+                        <div>
+                            <label for="address-street" class="block text-sm font-medium text-gray-700">Street Address</label>
+                            <input type="text" id="address-street" value="" placeholder="Loading..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" onchange="handleAddressChange()">
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- City -->
+                            <div>
+                                <label for="address-city" class="block text-sm font-medium text-gray-700">City</label>
+                                <input type="text" id="address-city" value="" placeholder="Loading..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" onchange="handleAddressChange()">
+                            </div>
+                            <!-- State -->
+                            <div>
+                                <label for="address-state" class="block text-sm font-medium text-gray-700">State</label>
+                                <input type="text" id="address-state" value="" placeholder="Loading..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" onchange="handleAddressChange()">
+                            </div>
+                            <!-- Pincode -->
+                            <div>
+                                <label for="address-pincode" class="block text-sm font-medium text-gray-700">Pincode</label>
+                                <input type="text" id="address-pincode" value="" placeholder="Loading..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" onchange="handleAddressChange()">
+                            </div>
+                        </div>
+                    </form>
+                    <p id="address-feedback" class="mt-4 text-sm text-gray-500">Address is currently active.</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Summary and Payment -->
+            <div class="lg:col-span-1 space-y-8">
+                
+                <!-- 3. Order Total Summary -->
+                <div class="bg-white p-6 rounded-xl shadow-lg sticky top-20">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-3">Order Summary</h2>
+                    <div id="price-breakdown" class="space-y-2 text-gray-700">
+                        <p class="text-center text-gray-500">Calculating totals...</p>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="flex justify-between items-center text-xl font-bold text-gray-900">
+                            <span>Total Payable</span>
+                            <span id="total-payable-value">₹ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 4. Payment Method & Action -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-800 section-header">Payment Method</h2>
+                    
+                    <div class="space-y-4 mt-4">
+                        <div class="flex items-center p-3 border border-green-200 rounded-lg bg-green-50">
+                            <input type="radio" id="bankTransfer" name="paymentMethod" value="Bank Transfer" checked class="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500">
+                            <label for="bankTransfer" class="ml-3 block text-sm font-medium text-gray-700">
+                                Bank Transfer (Preferred)
+                            </label>
+                        </div>
+                        <div class="flex items-center p-3 border border-gray-200 rounded-lg">
+                            <input type="radio" id="upi" name="paymentMethod" value="UPI" class="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500">
+                            <label for="upi" class="ml-3 block text-sm font-medium text-gray-700">
+                                UPI/QR Code
+                            </label>
+                        </div>
+                        <div class="flex items-center p-3 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed">
+                            <input type="radio" id="creditCard" name="paymentMethod" value="Credit Card" disabled class="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500">
+                            <label for="creditCard" class="ml-3 block text-sm font-medium text-gray-700">
+                                Credit/Debit Card (Coming Soon)
+                            </label>
+                        </div>
+                    </div>
+
+                    <button onclick="placeOrder()" id="place-order-btn" class="checkout-button w-full mt-6 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50" disabled>
+                        Loading...
+                    </button>
+                    
+                    <p class="text-xs text-gray-500 mt-3 text-center">By placing this order, you agree to our Terms and Conditions.</p>
+                </div>
+
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Simple success message box (replaces alert()) -->
+    <div id="message-box" class="fixed bottom-5 right-5 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg shadow-xl hidden transition-opacity duration-300" role="alert">
+        <p id="message-text">Order placed successfully!</p>
+    </div>
+
+    <script>
+        // Global variables to hold dynamic data
+        let orderData = { items: [], deliveryAddress: {} }; 
+        let totals = { subtotal: 0, platformFee: 0, gst: 0, total: 0 };
+        // Determine app context path once (works for both /<app>/Resources/... and /Resources/...)
+        const APP_CTX = (() => {
+            const p = window.location.pathname;
+            const i = p.indexOf('/Resources/');
+            if (i >= 0) return p.substring(0, i); // may be '' if at root
+            const parts = p.split('/').filter(Boolean);
+            return parts.length ? '/' + parts[0] : '';
+        })();
+
+        // --- Calculation Constants (Assumed to be static business rules) ---
+        const PLATFORM_FEE_RATE = 0.01; // 1% of subtotal
+        const GST_RATE = 0.18; // 18% on product worth only
+        const SHIPPING_COST = 500; // Flat shipping fee per order
+        
+        // --- Utility Functions ---
+        function safeParseJSON(val, fallback){
+            if(val == null) return fallback;
+            if(typeof val === 'object') return val;
+            if(typeof val === 'string'){
+                try { return JSON.parse(val); } catch(e) { return fallback; }
+            }
+            return fallback;
+        }
+        function isEmptyObject(obj){ return !obj || (typeof obj === 'object' && Object.keys(obj).length === 0); }
+
+        function normalizeOrderResponse(data){
+            const out = { items: [], deliveryAddress: {} };
+            if(!data) return out;
+            out.items = Array.isArray(data.items) ? data.items : safeParseJSON(data.items, []);
+            // Some backends may send org.json object, or a stringified JSON
+            const addr = data.deliveryAddress;
+            out.deliveryAddress = (typeof addr === 'string') ? safeParseJSON(addr, {}) : (addr || {});
+            return out;
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(amount);
+        }
+
+        function showMessage(text, isError = false, duration = 3000) {
+            const msgBox = document.getElementById('message-box');
+            const msgText = document.getElementById('message-text');
+            msgText.textContent = text;
+            if(isError) {
+                msgBox.classList.remove('bg-green-100', 'border-green-400', 'text-green-700');
+                msgBox.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
+            } else {
+                msgBox.classList.remove('bg-red-100', 'border-red-400', 'text-red-700');
+                msgBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
+            }
+            msgBox.classList.remove('hidden');
+            msgBox.style.opacity = '1';
+            if(duration > 0) {
+                setTimeout(() => {
+                    msgBox.style.opacity = '0';
+                    setTimeout(() => { msgBox.classList.add('hidden'); }, 300);
+                }, duration);
+            }
+        }
+
+        // --- Core Calculations ---
+        function calculateOrderTotals(items) {
+            let subtotal = 0;
+            (items || []).forEach(item => {
+                const quantity = parseFloat(item.quantity) || 0;
+                const unitPrice = parseFloat(item.unitPrice) || 0;
+                subtotal += quantity * unitPrice;
+            });
+            const platformFee = subtotal * PLATFORM_FEE_RATE;
+            const gst = subtotal * GST_RATE;
+            const total = subtotal + platformFee + gst + SHIPPING_COST;
+            return { subtotal, platformFee, gst, total };
+        }
+
+        // --- Data Fetching ---
+        async function fetchBuyerAddressFallback(){
+            try{
+                const resp = await fetch(`${APP_CTX}/orderdetailsservlet?purpose=getbuyeraddress`, { headers:{'Accept':'application/json'} });
+                if(!resp.ok) return {};
+                const data = await resp.json();
+                return normalizeOrderResponse({ deliveryAddress: data }).deliveryAddress;
+            }catch(e){ return {}; }
+        }
+
+        async function fetchOrderDetails() {
+            const servletUrl = `${APP_CTX}/orderdetailsservlet?purpose=getorderdetails`;
+            const btn = document.getElementById('place-order-btn');
+            btn.textContent = 'Loading...';
+            btn.disabled = true;
+            const li = document.getElementById('loading-indicator');
+            if(li) li.classList.remove('hidden');
+            showMessage('Fetching order details...', false, 0);
+
+            try {
+                const response = await fetch(servletUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+                if(!response.ok) throw new Error(`HTTP ${response.status}`);
+                const raw = await response.json();
+                let normalized = normalizeOrderResponse(raw);
+
+                // If server returned no items but we have a sessionStorage fallback, use it
+                if((normalized.items||[]).length === 0){
+                    try{
+                        const ss = sessionStorage.getItem('agriCartItems');
+                        const ssItems = safeParseJSON(ss, []);
+                        if(Array.isArray(ssItems) && ssItems.length){ normalized.items = ssItems; }
+                    }catch(e){ /* ignore */ }
+                }
+
+                // If deliveryAddress empty, try to fetch from getbuyeraddress
+                if(isEmptyObject(normalized.deliveryAddress)){
+                    const fb = await fetchBuyerAddressFallback();
+                    if(!isEmptyObject(fb)) normalized.deliveryAddress = fb;
+                }
+
+                orderData = normalized;
+                totals = calculateOrderTotals(orderData.items);
+                renderProductsSimple();
+                setDeliveryAddressFormValues();
+                renderPriceBreakdown();
+                btn.textContent = 'Place Order & Pay';
+                btn.disabled = (orderData.items || []).length === 0;
+                if(li) li.classList.add('hidden');
+                showMessage('Order details loaded successfully.', false, 1500);
+
+            } catch (error) {
+                console.error('Error fetching order data:', error);
+                btn.textContent = 'Failed to Load';
+                btn.disabled = true;
+                const li2 = document.getElementById('loading-indicator');
+                if(li2) li2.textContent = 'Failed to load order data. Please refresh the page.';
+                showMessage('Failed to load order data.', true, 4000);
+            }
+        }
+        
+        // --- Rendering & Form Management ---
+        function setDeliveryAddressFormValues() {
+            const address = orderData.deliveryAddress || {};
+            document.getElementById('contact-name').value = address.industryname || address.contactName || '';
+            document.getElementById('contact-phone').value = address.phone || address.contactNo || '';
+            document.getElementById('address-street').value = address.street || address.addressLine1 || '';
+            document.getElementById('address-city').value = address.city || '';
+            document.getElementById('address-state').value = address.state || '';
+            document.getElementById('address-pincode').value = address.pincode || address.pin || '';
+        }
+
+        function renderProductsSimple() {
+            const container = document.getElementById('seller-product-details');
+            container.innerHTML = '';
+            const items = orderData.items || [];
+            const itemCount = items.length;
+            document.getElementById('products-header').textContent = `Products in your order (${itemCount} items)`;
+            if(itemCount === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-4">Your cart is empty.</p>';
+                return;
+            }
+            const listHtml = items.map((it, idx) => {
+                const qty = parseFloat(it.quantity) || 0;
+                const price = parseFloat(it.unitPrice) || 0;
+                const lineTotal = qty * price;
+                const title = it.product || it.productName || `Item ${idx+1}`;
+                return `
+                    <div class="product-item flex justify-between items-center text-sm">
+                        <div class="flex-1 pr-3">
+                            <p class="font-medium text-gray-800">${title}</p>
+                            <p class="text-gray-500">Qty: ${qty} × ${formatCurrency(price)}</p>
+                        </div>
+                        <span class="font-semibold text-gray-900">${formatCurrency(lineTotal)}</span>
+                    </div>
+                `;
+            }).join('');
+            container.insertAdjacentHTML('beforeend', listHtml);
+        }
+        
+        function handleAddressChange() {
+            const industryname = document.getElementById('contact-name').value;
+            const phone = document.getElementById('contact-phone').value;
+            const street = document.getElementById('address-street').value;
+            const city = document.getElementById('address-city').value;
+            const state = document.getElementById('address-state').value;
+            const pincode = document.getElementById('address-pincode').value;
+            
+            orderData.deliveryAddress = { industryname, phone, street, city, state, pincode };
+            
+            const feedback = document.getElementById('address-feedback');
+            feedback.textContent = 'Address details updated in real-time.';
+            feedback.classList.remove('text-gray-500');
+            feedback.classList.add('text-blue-600');
+            setTimeout(() => {
+                feedback.textContent = 'Address is currently active.';
+                feedback.classList.remove('text-blue-600');
+                feedback.classList.add('text-gray-500');
+            }, 2000);
+        }
+
+        function renderPriceBreakdown() {
+            const container = document.getElementById('price-breakdown');
+            if((orderData.items || []).length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500">Cart is empty. No totals to show.</p>';
+            } else {
+                container.innerHTML = `
+                    <div class="flex justify-between"><p>Subtotal (Products):</p> <span>${formatCurrency(totals.subtotal)}</span></div>
+                    <div class="flex justify-between"><p>Shipping/Logistics Cost:</p> <span>${formatCurrency(SHIPPING_COST)}</span></div>
+                    <div class="flex justify-between text-sm text-red-600"><p>Platform Fee (1%):</p> <span>+ ${formatCurrency(totals.platformFee)}</span></div>
+                    <div class="flex justify-between text-sm text-blue-600"><p>GST (18% on Products):</p> <span>+ ${formatCurrency(totals.gst)}</span></div>
+                `;
+            }
+            document.getElementById('total-payable-value').textContent = formatCurrency(totals.total);
+        }
+
+        // --- Action Handlers ---
+        async function placeOrder() {
+            if (!orderData.items || orderData.items.length === 0) {
+                showMessage("Cannot place order: Cart is empty or data failed to load.", true);
+                return;
+            }
+            const currentAddress = orderData.deliveryAddress || {};
+            const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const payload = {
+                items: orderData.items,
+                deliveryAddress: currentAddress,
+                paymentMethod: selectedMethod,
+                totals
+            };
+
+            const btn = document.getElementById('place-order-btn');
+            btn.disabled = true;
+            btn.textContent = 'Placing Order...';
+            try {
+                const resp = await fetch(`${APP_CTX}/orderdetailsservlet?purpose=placeorder`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    const msg = (result && result.error) ? result.error : `Failed (${resp.status})`;
+                    throw new Error(msg);
+                }
+                if (result.status === 'partial_success') {
+                    const insufficientItems = result.insufficientItems || [];
+                    let message = 'Order placed partially. The following items have insufficient stock:\n';
+                    insufficientItems.forEach(item => {
+                        message += `- Product: ${item.product}, Requested: ${item.requestedQuantity}, Available: ${item.availableQuantity}\n`;
+                    });
+                    showMessage(message, true, 10000);
+                    btn.textContent = 'Order Placed Partially';
+                } else {
+                    const orderId = result.orderId || 'N/A';
+                    showMessage(`Order placed successfully. Order ID: ${orderId}.`, false, 5000);
+                    btn.textContent = 'Order Placed';
+                }
+            } catch (e) {
+                console.error('Place order error:', e);
+                showMessage(`Failed to place order: ${e.message}`, true, 5000);
+                btn.disabled = false;
+                btn.textContent = 'Place Order & Pay';
+            }
+        }
+        
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchOrderDetails();
+        });
+    </script>
+</body>
+</html>

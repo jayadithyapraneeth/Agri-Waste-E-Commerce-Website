@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgriWaste Trading — Biomass Products</title>
+<style>
+  :root{
+    --bg:#0f1318; --surface:#ffffff; --ink:#0e1926; --muted:#5b6677; --line:#e6eaf0;
+    --accent:#0f8b8d; --accent-2:#16537e; --chip:#eef8f6; --badge:#f2f6ff;
+    --ok:#1b5e20; --warn:#8a6d1e; --danger:#b3261e;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{ margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif; color:#1b2430; background:#f5f7fb; }
+
+  /* App bar */
+  .appbar{
+    position:sticky; top:0; z-index:10; background:#0f1318; color:#eaf2ff;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .appbar-inner{
+    width:min(1200px,94vw); margin:auto; display:flex; align-items:center; justify-content:space-between;
+    padding:12px 4px;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .logo{
+    width:34px; height:34px; border-radius:6px; background:linear-gradient(135deg,#0f8b8d,#16537e);
+    color:#0d1a1f; font-weight:800; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 18px rgba(0,0,0,0.35);
+  }
+  .brand h1{ margin:0; font-size:1.02rem; letter-spacing:.2px; color:#e7eefc; }
+  .audience{ font-size:.86rem; color:#b7c3d6; }
+
+  /* Filters panel */
+  .container{ width:min(1200px,94vw); margin:18px auto 30px; }
+  .panel{
+    background:#ffffff; border:1px solid var(--line); border-radius:14px; padding:14px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  }
+  .filters{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr 0.9fr; gap:10px; }
+  .filters input,.filters select{
+    width:100%; padding:10px 12px; border-radius:10px; border:1px solid #d8dde6; background:#fff; color:var(--ink); outline:none;
+  }
+  .chips{ margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+  .chip{ font-size:0.86rem; background:#f5f7fb; border:1px solid #e3e8f1; padding:6px 10px; border-radius:999px; color:#425067; }
+
+  /* Toolbar */
+  .toolbar{ margin:12px 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .btn{ appearance:none; border:1px solid #d5dce6; background:#ffffff; color:#203040; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600; }
+  .btn.primary{ background:linear-gradient(135deg,#0f8b8d,#16537e); color:#fff; border:none; }
+  .btn.ghost{ background:#f8fbff; border:1px dashed #cfd8e6; }
+  #count{ margin-left:auto; color:#5d6a7f; }
+
+  /* Grid + Cards */
+  .grid{ margin-top:16px; display:grid; gap:16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .card{
+    background:var(--surface); color:var(--ink); border:1px solid var(--line); border-radius:14px; overflow:hidden;
+    box-shadow:0 8px 20px rgba(0,0,0,0.06); display:flex; flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover{ transform: translateY(-2px); box-shadow:0 12px 26px rgba(0,0,0,0.10); }
+  .card-head{ padding:14px 14px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .title{ padding:8px 14px 0; font-weight:700; font-size:1.02rem; text-transform:capitalize; }
+  .meta{ padding:8px 14px 14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .unit{ color:#415161; background:#f6f8fb; border:1px solid #e7ebf2; border-radius:8px; padding:6px 10px; }
+  .availability{ background:#eef7f0; color:#175d1e; border:1px solid #cfe6d3; padding:6px 10px; border-radius:8px; font-weight:600; }
+  .out{ background:#fff6e6; color:#8a6d1e; border:1px solid #f0e0aa; }
+  .price{ background:#f2f6ff; color:#1c3f86; border:1px solid #d8e3ff; padding:6px 10px; border-radius:8px; font-weight:700; }
+  .region-badge{ background:#f7f9fc; color:#415161; border:1px solid #e6ecf5; padding:6px 10px; border-radius:8px; }
+  .tag{ font-weight:700; font-size:.78rem; padding:6px 10px; border-radius:999px; background:#eef5ff; color:#2c3a66; border:1px solid #d9e2ff; }
+  .actions{ margin-top:auto; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #e9ecf1; }
+
+  .empty{ text-align:center; color:#738198; padding:30px; border:1px dashed #d7dee9; border-radius:12px; background:#fff; }
+
+  /* Modal */
+  .modal-backdrop{ position:fixed; inset:0; background:rgba(7,12,18,0.55); display:none; align-items:center; justify-content:center; z-index:40; }
+  .modal{ width:min(820px, 96vw); background:#fff; color:#18202a; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.35); }
+  .modal .mhead{ padding:14px 16px; border-bottom:1px solid #e9ecf1; display:flex; align-items:center; justify-content:space-between; }
+  .modal .mbody{ padding:16px; }
+  .modal .mfooter{ padding:12px 16px; border-top:1px solid #e9ecf1; display:flex; justify-content:flex-end; gap:8px; }
+  .close-x{ cursor:pointer; border:none; background:transparent; font-size:20px; line-height:1; }
+  .farmer-list{ margin-top:8px; border:1px solid #e9ecf1; border-radius:10px; background:#f9fbfd; }
+  .farmer-row{ display:grid; grid-template-columns: 1fr auto auto auto; gap:10px; padding:8px 10px; border-bottom:1px dashed #e3e7ee; align-items:center; }
+  .farmer-row:last-child{ border-bottom:none; }
+  .pill{ padding:4px 8px; border-radius:999px; background:#eef2ff; color:#384a98; border:1px solid #d9e1ff; font-size:.82rem; }
+  .price-pill{ background:#eef7ff; color:#1c3f86; border-color:#cfe0ff; font-weight:700; }
+  .minq{ background:#f6fbf3; color:#1a5a1b; border-color:#cfe6d3; }
+</style>
+</head>
+<body>
+  <div class="appbar">
+    <div class="appbar-inner">
+      <div class="brand">
+        <div class="logo">AT</div>
+        <h1>Biomass & AgriWaste — Products</h1>
+      </div>
+      <div class="audience">For industrial buyers, compost/fertilizer makers, and farmers</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Filters -->
+    <div class="panel">
+      <div class="filters">
+        <input id="search" type="search" placeholder="Search (e.g., rice husk, wheat straw, coffee husk)…" aria-label="Search products">
+        <select id="category" aria-label="Filter by category">
+          <option value="">All categories</option>
+          <option value="cerealcrop">Cereal crop</option>
+          <option value="fruitcrop">Fruit crop</option>
+          <option value="vegetablecrop">Vegetable crop</option>
+          <option value="oilseedcrop">Oilseed crop</option>
+          <option value="fibercrop">Fiber crop</option>
+          <option value="sugarcrop">Sugar crop</option>
+          <option value="spices">Spices</option>
+          <option value="pulsewaste">Pulse waste</option>
+        </select>
+        <select id="region" aria-label="Preferred region">
+          <option value="">All regions</option>
+        </select>
+        <select id="availability" aria-label="Availability">
+          <option value="">Any availability</option>
+          <option value="in">In stock (>0)</option>
+          <option value="out">Out of stock (=0)</option>
+        </select>
+        <select id="sort" aria-label="Sort">
+          <option value="price-asc">Price: Low→High</option>
+          <option value="price-desc">Price: High→Low</option>
+          <option value="name-asc">Name: A→Z</option>
+          <option value="name-desc">Name: Z→A</option>
+          <option value="qty-desc">Quantity: High→Low</option>
+          <option value="qty-asc">Quantity: Low→High</option>
+          <option value="cat-asc">Category</option>
+        </select>
+      </div>
+      <div class="chips" id="summary"></div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn ghost" id="reset">Reset filters</button>
+      <button class="btn" id="toggle-zero">Hide zero-stock</button>
+      <span id="count"></span>
+    </div>
+
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty" style="display:none;">No products match the filters.</div>
+  </div>
+
+  <!-- Product details modal -->
+  <div id="modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <div class="mhead">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="m-tag" class="tag">Category</span>
+          <strong id="m-title" style="text-transform:capitalize;">Product</strong>
+        </div>
+        <button class="close-x" id="m-close" aria-label="Close">×</button>
+      </div>
+      <div class="mbody">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+          <span id="m-qty" class="availability">0 available</span>
+          <span id="m-unit" class="pill">Unit: kg</span>
+          <span id="m-cropid" class="pill">ID: …</span>
+          <span id="m-price" class="price">₹—</span>
+          <span id="m-region" class="region-badge">All regions</span>
+        </div>
+        <p style="margin:.3rem 0 .8rem;color:#445167;">Demand-based price range is computed from multiple farmers supplying this product.</p>
+
+        <h4 style="margin:.6rem 0;">Farmers supplying this product</h4>
+        <div id="farmer-list" class="farmer-list">
+          <div style="padding:8px 10px;color:#6b7785;">Fetching farmers…</div>
+        </div>
+      </div>
+      <div class="mfooter">
+        <button class="btn" id="contact-btn">Contact us</button>
+        <button class="btn primary" id="enquire-btn">Enquire availability</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ================== Configuration & Data Hooks ================== */
+// If hosting data via API, set URLs here (same-origin/CORS handled server-side).
+const PRODUCTS_URL = ""; // e.g., "/api/products"
+const FARMERS_URL  = ""; // e.g., "/api/farmers?cropid="
+const REGIONS_URL  = ""; // e.g., "/api/regions"
+
+const EMBEDDED_DATA = {
+  products: [
+    // Minimal sample — replace with server-rendered products or fetch via PRODUCTS_URL
+    {cropid:"ricehusk", categoryid:"cerealcrop", unitsavailable:120, unittype:"kg"},
+    {cropid:"ricestraw", categoryid:"cerealcrop", unitsavailable:100, unittype:"kg"},
+    {cropid:"coffeehusk", categoryid:"spices", unitsavailable:80,  unittype:"kg"},
+    {cropid:"teastalk", categoryid:"spices", unitsavailable:56,  unittype:"kg"},
+    {cropid:"sugarcanebagasse", categoryid:"sugarcrop", unitsavailable:100, unittype:"kg"},
+    // … include all 47 rows from your CSV
+  ],
+  // optional seed for UI; real app should fetch per cropid on demand
+  farmersByCrop: {
+    ricehusk: [
+      {farmerName:"Ravi Kumar", region:"Guntur, Andhra Pradesh", pricePerUnit:9.5,  minOrderQty:500},
+      {farmerName:"A. Reddy",   region:"Karimnagar, Telangana", pricePerUnit:10.2, minOrderQty:300},
+      {farmerName:"S. Patel",   region:"Nashik, Maharashtra",    pricePerUnit:11.0, minOrderQty:800}
+    ],
+    ricestraw: [
+      {farmerName:"B. Singh",   region:"Indore, Madhya Pradesh", pricePerUnit:6.0,  minOrderQty:1000},
+      {farmerName:"K. Sharma",  region:"Varanasi, Uttar Pradesh",pricePerUnit:5.5,  minOrderQty:800}
+    ],
+    coffeehusk: [
+      {farmerName:"J. Gowda",   region:"Belagavi, Karnataka",     pricePerUnit:18.0, minOrderQty:200},
+      {farmerName:"R. Iyer",    region:"Erode, Tamil Nadu",       pricePerUnit:17.2, minOrderQty:350}
+    ],
+    teastalk: [
+      {farmerName:"P. Das",     region:"Bardhaman, West Bengal",  pricePerUnit:14.5, minOrderQty:250}
+    ],
+    sugarcanebagasse: [
+      {farmerName:"M. Rao",     region:"Guntur, Andhra Pradesh",  pricePerUnit:7.8,  minOrderQty:700},
+      {farmerName:"L. Naik",    region:"Belagavi, Karnataka",     pricePerUnit:8.2,  minOrderQty:600}
+    ]
+  },
+  regions: [
+    "Guntur, Andhra Pradesh","Karimnagar, Telangana","Belagavi, Karnataka","Erode, Tamil Nadu","Nashik, Maharashtra",
+    "Varanasi, Uttar Pradesh","Indore, Madhya Pradesh","Bardhaman, West Bengal"
+  ]
+};
+
+/* ================== Utilities ================== */
+const fmt = new Intl.NumberFormat('en-IN', {maximumFractionDigits:2});
+function priceRange(list){
+  const prices = (list||[]).map(x=>Number(x.pricePerUnit)).filter(n=>!isNaN(n));
+  if(prices.length===0) return null;
+  const min = Math.min(...prices), max = Math.max(...prices);
+  return {min, max};
+}
+function titleize(id){
+  return id.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/_/g,' ').replace(/([a-z])([a-z]+)/gi,(m)=>m).replace(/[ ]+/g,' ').trim();
+}
+function niceName(id){ return titleize(id).replace(/\b([a-z])/g, s=>s.toUpperCase()); }
+function categoryLabel(id){
+  const map = {cerealcrop:'Cereal crop',fruitcrop:'Fruit crop',vegetablecrop:'Vegetable crop',oilseedcrop:'Oilseed crop',fibercrop:'Fiber crop',sugarcrop:'Sugar crop',spices:'Spices',pulsewaste:'Pulse waste'};
+  return map[id] || id;
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,(m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[m])); }
+
+/* ================== State ================== */
+let PRODUCTS = [];
+let REGIONS = [];
+let HIDE_ZERO = false;
+const CACHE_FARMERS = new Map(); // cropid => farmers[]
+
+/* ================== Elements ================== */
+const grid = document.getElementById('grid');
+const empty = document.getElementById('empty');
+const search = document.getElementById('search');
+const category = document.getElementById('category');
+const regionSel = document.getElementById('region');
+const availability = document.getElementById('availability');
+const sortSel = document.getElementById('sort');
+const countEl = document.getElementById('count');
+const summary = document.getElementById('summary');
+const resetBtn = document.getElementById('reset');
+const toggleZeroBtn = document.getElementById('toggle-zero');
+
+/* Modal */
+const modalBackdrop = document.getElementById('modal-backdrop');
+const mClose = document.getElementById('m-close');
+const mTitle = document.getElementById('m-title');
+const mTag = document.getElementById('m-tag');
+const mQty = document.getElementById('m-qty');
+const mUnit = document.getElementById('m-unit');
+const mCropId = document.getElementById('m-cropid');
+const mPrice = document.getElementById('m-price');
+const mRegion = document.getElementById('m-region');
+const farmerList = document.getElementById('farmer-list');
+const enquireBtn = document.getElementById('enquire-btn');
+const contactBtn = document.getElementById('contact-btn');
+
+/* ================== Data loading (replace with fetch) ================== */
+async function loadProducts(){
+  if(PRODUCTS_URL){
+    const r = await fetch(PRODUCTS_URL,{cache:'no-store'});
+    return await r.json();
+  }
+  // fallback to embedded
+  return EMBEDDED_DATA.products;
+}
+async function loadRegions(){
+  if(REGIONS_URL){
+    const r = await fetch(REGIONS_URL,{cache:'no-store'});
+    return await r.json();
+  }
+  return EMBEDDED_DATA.regions || [];
+}
+async function fetchFarmers(cropid){
+  if(CACHE_FARMERS.has(cropid)) return CACHE_FARMERS.get(cropid);
+  if(FARMERS_URL){
+    const r = await fetch(FARMERS_URL + encodeURIComponent(cropid), {cache:'no-store'});
+    const data = await r.json();
+    CACHE_FARMERS.set(cropid, data);
+    return data;
+  }
+  const data = (EMBEDDED_DATA.farmersByCrop && EMBEDDED_DATA.farmersByCrop[cropid]) ? EMBEDDED_DATA.farmersByCrop[cropid] : [];
+  CACHE_FARMERS.set(cropid, data);
+  return data;
+}
+
+/* ================== Rendering ================== */
+function render(){
+  const q = search.value.trim().toLowerCase();
+  const cat = category.value;
+  const reg = regionSel.value;
+  const av = availability.value;
+
+  let rows = PRODUCTS.slice();
+
+  // Compute price ranges from cached farmers where available
+  rows = rows.map(p=>{
+    const farmers = CACHE_FARMERS.get(p.cropid) || [];
+    const r = priceRange(filterByRegion(farmers, reg));
+    return {...p, priceMin: r? r.min : null, priceMax: r? r.max : null, hasFarmers: farmers.length>0};
+  });
+
+  if(q) rows = rows.filter(r => r.cropid.toLowerCase().includes(q));
+  if(cat) rows = rows.filter(r => r.categoryid === cat);
+  if(reg) {
+    // Show products that have at least one farmer in region; still show others but mark price unknown if not in region?
+    // For buyers focused on logistics, we’ll filter strictly when a region is selected:
+    rows = rows.filter(r => r.priceMin !== null);
+  }
+  if(av === 'in') rows = rows.filter(r => r.unitsavailable > 0);
+  else if(av === 'out') rows = rows.filter(r => r.unitsavailable === 0);
+  if(HIDE_ZERO) rows = rows.filter(r => r.unitsavailable > 0);
+
+  // Sort
+  const [key, dir] = sortSel.value.split('-');
+  rows.sort((a,b)=>{
+    const m = dir==='asc' ? 1 : -1;
+    if(key==='price'){
+      const aa = a.priceMin ?? Number.POSITIVE_INFINITY;
+      const bb = b.priceMin ?? Number.POSITIVE_INFINITY;
+      return (aa>bb?1:aa<bb?-1:0)*m;
+    }
+    if(key==='name'){
+      const na = a.cropid.toLowerCase(), nb = b.cropid.toLowerCase();
+      return (na>nb?1:na<nb?-1:0)*m;
+    }
+    if(key==='qty'){
+      return (a.unitsavailable - b.unitsavailable)*(dir==='asc'?1:-1);
+    }
+    if(key==='cat'){
+      return a.categoryid.localeCompare(b.categoryid);
+    }
+    return 0;
+  });
+
+  grid.innerHTML = '';
+  if(rows.length===0){
+    empty.style.display = '';
+    countEl.textContent = '0 results';
+  } else {
+    empty.style.display = 'none';
+    countEl.textContent = rows.length + ' result' + (rows.length>1?'s':'');
+    const frag = document.createDocumentFragment();
+    rows.forEach(r => frag.appendChild(cardFor(r, reg)));
+    grid.appendChild(frag);
+  }
+
+  summary.innerHTML = '';
+  const chips = [];
+  if(q) chips.push(`Search: "${q}"`);
+  if(cat) chips.push(`Category: ${categoryLabel(cat)}`);
+  if(reg) chips.push(`Region: ${reg}`);
+  if(av) chips.push(av==='in'?'In stock':'Out of stock');
+  if(HIDE_ZERO) chips.push('Hiding zero-stock');
+  for (const t of chips){
+    const el = document.createElement('span');
+    el.className='chip'; el.textContent=t; summary.appendChild(el);
+  }
+}
+
+function cardFor(r, reg){
+  const el = document.createElement('div');
+  el.className = 'card';
+  const name = niceName(r.cropid);
+  const qtyText = r.unitsavailable>0 ? `${r.unitsavailable} ${r.unittype}` : 'Out of stock';
+  const qtyClass = r.unitsavailable>0 ? 'availability' : 'availability out';
+  const priceText = (r.priceMin!=null && r.priceMax!=null)
+      ? `₹${fmt.format(r.priceMin)}–₹${fmt.format(r.priceMax)}/${r.unittype}`
+      : (reg ? 'No regional price' : 'Price varies by farmer');
+
+  el.innerHTML = `
+    <div class="card-head">
+      <span class="tag">${categoryLabel(r.categoryid)}</span>
+      <span class="${qtyClass}">${qtyText}</span>
+    </div>
+    <div class="title">${name}</div>
+    <div class="meta">
+      <span class="unit">Unit: ${r.unittype}</span>
+      <span class="price">${priceText}</span>
+      ${reg ? `<span class="region-badge">Region: ${escapeHtml(reg)}</span>` : ``}
+    </div>
+    <div class="actions">
+      <button class="btn" data-view>View details</button>
+      <button class="btn primary" data-enquire>Enquire</button>
+    </div>
+  `;
+
+  el.querySelector('[data-view]').addEventListener('click', ()=> openModal(r, reg));
+  el.querySelector('[data-enquire]').addEventListener('click', ()=> openModal(r, reg, true));
+  return el;
+}
+
+/* ================== Modal ================== */
+async function openModal(r, reg, focusEnquire){
+  mTitle.textContent = niceName(r.cropid);
+  mTag.textContent = categoryLabel(r.categoryid);
+  mQty.className = r.unitsavailable>0 ? 'availability' : 'availability out';
+  mQty.textContent = r.unitsavailable>0 ? `${r.unitsavailable} ${r.unittype} available` : 'Out of stock';
+  mUnit.textContent = `Unit: ${r.unittype}`;
+  mCropId.textContent = `ID: ${r.cropid}`;
+  mRegion.textContent = reg ? reg : 'All regions';
+  farmerList.innerHTML = `<div style="padding:8px 10px;color:#6b7785;">Fetching farmers…</div>`;
+
+  modalBackdrop.style.display='flex';
+  modalBackdrop.setAttribute('aria-hidden','false');
+
+  try{
+    const farmers = await fetchFarmers(r.cropid);
+    const filtered = filterByRegion(farmers, reg);
+    const pr = priceRange(filtered.length ? filtered : farmers);
+    mPrice.textContent = pr ? `₹${fmt.format(pr.min)}–₹${fmt.format(pr.max)}/${r.unittype}` : 'Price not available';
+
+    const useList = filtered.length ? filtered : farmers;
+    if(!useList.length){
+      farmerList.innerHTML = `<div style="padding:8px 10px;color:#6b7785;">No farmer listings found for this item. Please enquire.</div>`;
+    } else {
+      farmerList.innerHTML = '';
+      // Header row
+      const header = document.createElement('div');
+      header.className='farmer-row';
+      header.style.fontWeight='700';
+      header.style.color='#2a3952';
+      header.innerHTML = `<div>Farmer</div><div>Region</div><div>Price</div><div>Min Qty</div>`;
+      farmerList.appendChild(header);
+
+      useList.forEach(f=>{
+        const row = document.createElement('div');
+        row.className='farmer-row';
+        row.innerHTML = `
+          <div>${escapeHtml(f.farmerName||'—')}</div>
+          <div><span class="pill">${escapeHtml(f.region||'—')}</span></div>
+          <div><span class="pill price-pill">₹${fmt.format(Number(f.pricePerUnit))}/${r.unittype}</span></div>
+          <div><span class="pill minq">${(f.minOrderQty||0)} ${r.unittype}</span></div>
+        `;
+        farmerList.appendChild(row);
+      });
+    }
+  }catch(e){
+    console.error(e);
+    mPrice.textContent = 'Price not available';
+    farmerList.innerHTML = `<div style="padding:8px 10px;color:#b3261e;">Failed to load farmer data. Please try again.</div>`;
+  }
+
+  if(focusEnquire) setTimeout(()=> enquireBtn.focus(), 50);
+}
+function closeModal(){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); }
+mClose.addEventListener('click', closeModal);
+modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) closeModal(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+enquireBtn.addEventListener('click', ()=>{
+  alert('Open enquiry form (guest) with product and preferred region pre-filled).');
+});
+contactBtn.addEventListener('click', ()=>{
+  alert('Open general contact form.');
+});
+
+/* ================== Region filter helper ================== */
+function filterByRegion(list, reg){
+  if(!reg) return list;
+  const r = reg.toLowerCase();
+  return (list||[]).filter(x => String(x.region||'').toLowerCase().includes(r));
+}
+
+/* ================== Events ================== */
+[search, category, regionSel, availability, sortSel].forEach(el=> el.addEventListener('input', render));
+resetBtn.addEventListener('click', ()=>{
+  search.value=''; category.value=''; availability.value=''; sortSel.value='price-asc'; regionSel.value='';
+  HIDE_ZERO=false; toggleZeroBtn.classList.remove('primary'); toggleZeroBtn.textContent='Hide zero-stock';
+  render();
+});
+toggleZeroBtn.addEventListener('click', ()=>{
+  HIDE_ZERO = !HIDE_ZERO;
+  toggleZeroBtn.classList.toggle('primary', HIDE_ZERO);
+  toggleZeroBtn.textContent = HIDE_ZERO ? 'Show zero-stock' : 'Hide zero-stock';
+  render();
+});
+
+/* ================== Bootstrap ================== */
+(async function init(){
+  // Load base lists
+  try{
+    PRODUCTS = await loadProducts();
+    REGIONS = await loadRegions();
+  }catch(e){
+    console.error('Load failed', e);
+    PRODUCTS = EMBEDDED_DATA.products || [];
+    REGIONS = EMBEDDED_DATA.regions || [];
+  }
+
+  // Prefill region dropdown
+  regionSel.innerHTML = '<option value="">All regions</option>' + (REGIONS||[]).map(r=>`<option>${escapeHtml(r)}</option>`).join('');
+
+  // Optional: warm cache for top products to compute price ranges immediately
+  const warmList = PRODUCTS.slice(0, 6);
+  await Promise.all(warmList.map(p=> fetchFarmers(p.cropid).catch(()=>[])));
+
+  render();
+})();
+</script>
+</body>
+</html>

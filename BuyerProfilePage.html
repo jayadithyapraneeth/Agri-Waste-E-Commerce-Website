@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyer Profile - AgriWaste Trading</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f2fbf6 0%, #eefaf4 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0c7d53, #83c54a);
+      color: white;
+      padding: 24px 30px;
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      box-shadow: 0 4px 20px rgba(12,125,83,0.15);
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: white;
+      color: #0c7d53;
+    }
+
+    .btn-primary:hover {
+      background: #f0f8f5;
+      transform: translateY(-1px);
+    }
+
+    .btn-logout {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-logout:hover {
+      background: #dc2626;
+    }
+
+    .btn-save {
+      background: #0c7d53;
+      color: white;
+    }
+
+    .btn-save:hover {
+      background: #0a6544;
+    }
+
+    .btn-cancel {
+      background: #64748b;
+      color: white;
+    }
+
+    .btn-cancel:hover {
+      background: #475569;
+    }
+
+    .btn-edit {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #2563eb;
+    }
+
+    /* Main Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border: 1px solid #e5edf0;
+    }
+
+    .profile-info {
+      text-align: center;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0c7d53, #83c54a);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 20px rgba(12,125,83,0.2);
+    }
+
+    .industry-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+
+    .industry-type {
+      color: #64748b;
+      font-size: 0.9rem;
+      background: #f1f5f9;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .quick-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 12px;
+      background: #f8fbf9;
+      border-radius: 8px;
+      border: 1px solid #e5edf0;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0c7d53;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* Dashboard Cards */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border: 1px solid #e5edf0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .dashboard-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .icon-orders {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .icon-active {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .icon-pending {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .dashboard-info h3 {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .dashboard-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    /* Profile Details Form */
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e5edf0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      padding: 12px;
+      border: 1px solid #cfe7da;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+      background: #f8fbf9;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: #83c54a;
+      box-shadow: 0 0 0 3px rgba(131, 197, 74, 0.1);
+      background: white;
+    }
+
+    .form-group input:disabled,
+    .form-group textarea:disabled {
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5edf0;
+    }
+
+    /* Notifications */
+    .notification-item {
+      padding: 16px;
+      background: #f8fbf9;
+      border-left: 4px solid #0c7d53;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #dbeafe;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notification-content h4 {
+      font-size: 0.95rem;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+
+    .notification-content p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .notification-time {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    /* Change Password Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e5edf0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: #f1f5f9;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-actions {
+      padding: 16px 24px;
+      background: #f8fbf9;
+      border-top: 1px solid #e5edf0;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .alert.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        order: 2;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>
+        <span>👤</span>
+        <span>Buyer Profile</span>
+      </h1>
+      <div class="header-actions">
+        <a href="BuyersHomePage.html" class="btn btn-primary">🏠 Home</a>
+        <a href="OrderTrackingPage_Buyer.html" class="btn btn-primary">📦 My Orders</a>
+        <a href="logoutservlet"><button class="btn btn-logout" onclick="">🚪 Logout</button></a>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Profile Card -->
+        <div class="card profile-info">
+          <div class="profile-avatar" id="avatarInitial"><span type="text" id="avatarInitial1"></span></div>
+          <div class="industry-name" id="displayIndustryName"><span type="text" id="displayIndustryName1"></span></div>
+          <div class="industry-type"><span type="text" id="displayIndustryType1"></span></div>
+          
+          <div class="quick-stats">
+            <div class="stat-item">
+              <div class="stat-value" id="sidebarTotalOrders">0</div>
+              <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="sidebarActiveOrders">0</div>
+              <div class="stat-label">Active</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+            <button class="btn btn-edit" style="width: 100%;" onclick="enableEdit()">✏️ Edit Profile</button>
+            <button class="btn btn-primary" style="width: 100%;" onclick="openChangePasswordModal()">🔒 Change Password</button>
+          </div>
+        </div>
+
+        <!-- Recent Notifications -->
+        <div class="card">
+          <h3 class="section-title" style="font-size: 1rem; margin-bottom: 16px;">Recent Notifications</h3>
+          <div id="notificationsList">
+            <div class="notification-item">
+              <div class="notification-icon">📦</div>
+              <div class="notification-content">
+                <h4>Order Delivered</h4>
+                <p>Order #105 has been delivered successfully</p>
+                <span class="notification-time">2 hours ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon">🚚</div>
+              <div class="notification-content">
+                <h4>Order Shipped</h4>
+                <p>Order #103 is out for delivery</p>
+                <span class="notification-time">1 day ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon">✅</div>
+              <div class="notification-content">
+                <h4>Order Confirmed</h4>
+                <p>Order #102 has been confirmed by farmer</p>
+                <span class="notification-time">2 days ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Dashboard Summary -->
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <div class="dashboard-icon icon-orders">📊</div>
+            <div class="dashboard-info">
+              <h3>Total Orders</h3>
+              <div class="dashboard-value" id="dashTotalOrders">28</div>
+            </div>
+          </div>
+          <div class="dashboard-card">
+            <div class="dashboard-icon icon-active">🔄</div>
+            <div class="dashboard-info">
+              <h3>Active Orders</h3>
+              <div class="dashboard-value" id="dashActiveOrders">5</div>
+            </div>
+          </div>
+          <div class="dashboard-card">
+            <div class="dashboard-icon icon-pending">⏳</div>
+            <div class="dashboard-info">
+              <h3>Pending Deliveries</h3>
+              <div class="dashboard-value" id="dashPendingDeliveries">3</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="card">
+          <h2 class="section-title">Industry Information</h2>
+          
+          <div id="successAlert" class="alert success">
+            Profile updated successfully!
+          </div>
+
+          <form id="profileForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="industryName">Industry Name *</label>
+                <input type="text" id="industryname" value="BioPower Industries" disabled required>
+              </div>
+
+              <div class="form-group">
+                <label for="industryType">Industry Type *</label>
+                <input type="text" id="industrytype" value="Biomass Energy Producer" disabled required>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" value="biopower@example.com" disabled required>
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" value="+91 98765 43210" disabled required>
+              </div>
+
+              <div class="form-group">
+                <label for="alternatePhone">Alternate Phone</label>
+                <input type="tel" id="alternatephone" value="+91 98765 43211" disabled>
+              </div>
+
+              <div class="form-group">
+                <label for="gstin">GSTIN</label>
+                <input type="text" id="gstin" value="29ABCDE1234F1Z5" disabled>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="address">Complete Address *</label>
+              <textarea id="address" disabled required>Plot No. 45, Industrial Area Phase-2, Hyderabad, Telangana - 500032, India</textarea>
+            </div>
+
+            <div class="form-actions" id="formActions" style="display: none;">
+              <button type="button" class="btn btn-cancel" onclick="cancelEdit()">Cancel</button>
+              <button type="submit" onclick="formsubmit()" class="btn btn-save">💾 Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal-backdrop" id="passwordModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Change Password</h3>
+        <button class="modal-close" onclick="closePasswordModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="passwordAlert" class="alert"></div>
+        <form id="passwordForm">
+          <div class="form-group">
+            <label for="currentPassword">Current Password *</label>
+            <input type="password" id="currentPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="newPassword">New Password *</label>
+            <input type="password" id="newPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm New Password *</label>
+            <input type="password" id="confirmPassword" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closePasswordModal()">Cancel</button>
+        <button class="btn btn-save" onclick="changePassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample data (replace with fetch from servlet)
+    let isEditMode = false;
+    let originalFormData = {};
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+    	
+    	fetch("currentuserinfoservlet?frompage=buyerprofilepage", { method: 'GET'})
+        .then(response => response.json())
+        .then(data => {
+        	
+        	if(data.length === 0){
+        		
+        	}else{
+        		
+        		//this data is useful for restoring original form data on cancelling the profile edit
+        		originalFormData = {
+        			industryname: data.industryname,
+        			industrytype: data.industrytype,
+        			email: data.email,
+        			phone: data.phone,
+        			alternatephone: data.alternatephone,
+        			gstin: data.gstin,
+        			address: data.address
+        		}
+        		
+        		//updating the dashboard details
+        		document.getElementById('dashTotalOrders').textContent = data.totalorders;
+        	    document.getElementById('dashActiveOrders').textContent = data.activeorders;
+        	    document.getElementById('dashPendingDeliveries').textContent = data.pendingdeliveries;
+        	    
+        	    document.getElementById('sidebarTotalOrders').textContent = data.totalorders;
+        	    document.getElementById('sidebarActiveOrders').textContent = data.activeorders;
+        		
+        		
+        	    //updating the profile details
+        	    document.getElementById('avatarInitial1').textContent = data.industryname.charAt(0).toUpperCase();
+        	    document.getElementById('displayIndustryName1').textContent = data.industryname;
+        	    document.getElementById('displayIndustryType1').textContent = data.industrytype;
+        	    
+        		document.getElementById('industryname').value = data.industryname;
+        		document.getElementById('industrytype').value = data.industrytype;
+        		document.getElementById('email').value = data.email;
+        		document.getElementById('phone').value = data.phone;
+        		document.getElementById('alternatephone').value = data.alternatephone;
+        		document.getElementById('gstin').value = data.gstin;
+        		document.getElementById('address').value = data.address;
+        		
+        	}
+        	
+            
+        });
+    	
+    	
+      //loadDashboardData();
+      //saveOriginalFormData();
+      //setupFormSubmit();
+    });
+
+   /*  function loadDashboardData() {
+      // TODO: Fetch from servlet
+      // Example: fetch('/api/buyer/dashboard').then(r => r.json()).then(data => { ... });
+      
+      // Sample data
+      const dashData = {
+        totalOrders: 28,
+        activeOrders: 5,
+        pendingDeliveries: 3
+      };
+
+      
+    }
+ */
+     /* function saveOriginalFormData() {
+      const form = document.getElementById('profileForm');
+      const formData = new FormData(form);
+      originalFormData = {};
+      for (let [key, value] of formData) {
+        originalFormData[key] = value;
+      }
+    }  */
+
+    function enableEdit() {
+      isEditMode = true;
+      const inputs = document.querySelectorAll('#profileForm input, #profileForm textarea');
+      inputs.forEach(input => {
+        if(input.id !== 'email') { // Email typically shouldn't be editable because it is the main source of OTP authentication for our application currently
+          input.disabled = false;
+        }
+      });
+      document.getElementById('formActions').style.display = 'flex';
+    }
+
+    function cancelEdit() {
+      isEditMode = false;
+      const inputs = document.querySelectorAll('#profileForm input, #profileForm textarea');
+      inputs.forEach(input => input.disabled = true);
+      document.getElementById('formActions').style.display = 'none';
+      
+      // Restore original values
+      document.getElementById('industryName').value = originalFormData.industryname || 'BioPower Industries';
+      document.getElementById('industryType').value = originalFormData.industrytype || 'Biomass Energy Producer';
+      document.getElementById('phone').value = originalFormData.phone || '+91 98765 43210';
+      document.getElementById('alternatePhone').value = originalFormData.alternatephone || '+91 98765 43211';
+      document.getElementById('gstin').value = originalFormData.gstin || '29ABCDE1234F1Z5';
+      document.getElementById('address').value = originalFormData.address || 'Plot No. 45, Industrial Area Phase-2, Hyderabad, Telangana - 500032, India';
+      
+      hideAlert('successAlert');
+    }
+
+    function formsubmit() {
+      document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const setupFormData = {
+          industryname: document.getElementById('industryname').value,
+          industrytype: document.getElementById('industrytype').value,
+          email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value,
+          alternatephone: document.getElementById('alternatephone').value,
+          gstin: document.getElementById('gstin').value,
+          address: document.getElementById('address').value
+        };
+
+
+          const response = await fetch('buyerprofileupdateservlet', {
+           method: 'PUT',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify(setupFormData)
+         });
+        
+         if(response.ok){
+	        	const status = await response.json();
+	        	if(status.status === "success"){
+	        		
+	         		isEditMode = false;
+	         		const inputs = document.querySelectorAll('#profileForm input, #profileForm textarea');
+	         		inputs.forEach(input => input.disabled = true);
+	         		
+	         		document.getElementById('formActions').style.display = 'none';
+	        		alert("Profile updated successfully 12345");
+	        		
+	                document.getElementById('avatarInitial').textContent = formData.industryName.charAt(0).toUpperCase();      
+  	        		document.getElementById('industryname').textContent = formData.industryName;
+
+	         		
+	                const form = document.getElementById('profileForm');
+	                const formData = new FormData(form);
+	                originalFormData = {};
+	                for (let [key, value] of formData) {
+	                  originalFormData[key] = value;
+	                }
+	                
+	                showAlert('successAlert', 'success');
+	                setTimeout(() => hideAlert('successAlert'), 3000);
+	                //alert("Profile updated successfully");
+	                
+	           }else if(status.status === "failure"){
+             		alert()("Profile update failed. Please try again.");
+             	
+             		location.reload();
+               }
+	     }else{
+	        	console.error("Error updating profile:", response.status);
+	     }
+            
+      });
+    }
+
+    function openChangePasswordModal() {
+      document.getElementById('passwordModal').classList.add('active');
+      document.getElementById('passwordForm').reset();
+      hideAlert('passwordAlert');
+    }
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').classList.remove('active');
+    }
+
+    async function changePassword() {
+      const current = document.getElementById('currentPassword').value;
+      const newPass = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      // Validation
+      if(!current || !newPass || !confirm) {
+        showAlert('passwordAlert', 'error', 'All fields are required');
+        return;
+      }
+
+      if(newPass !== confirm) {
+        showAlert('passwordAlert', 'error', 'New passwords do not match');
+        return;
+      }
+
+      if(newPass.length < 8) {
+        showAlert('passwordAlert', 'error', 'Password must be at least 8 characters');
+        return;
+      }
+
+      // TODO: Send to servlet
+      // Example:
+      // const response = await fetch('/api/buyer/change-password', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ currentPassword: current, newPassword: newPass })
+      // });
+      
+      // if(response.ok) {
+        showAlert('passwordAlert', 'success', 'Password changed successfully!');
+        setTimeout(() => {
+          closePasswordModal();
+        }, 1500);
+      // } else {
+      //   showAlert('passwordAlert', 'error', 'Current password is incorrect');
+      // }
+    }
+
+    function logout() {
+      if(confirm('Are you sure you want to logout?')) {
+        // TODO: Call logout servlet
+         //fetch('logoutservlet', { method: 'POST' })//.then(() => {
+          //window.location.href = 'loginpage.html';
+         //});
+      }
+    }
+
+    function showAlert(id, type, message) {
+      const alert = document.getElementById(id);
+      alert.className = 'alert ' + type;
+      if(message) alert.textContent = message;
+      alert.style.display = 'block';
+    }
+
+    function hideAlert(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('passwordModal').addEventListener('click', (e) => {
+      if(e.target.id === 'passwordModal') closePasswordModal();
+    });
+  </script>
+</body>
+</html>

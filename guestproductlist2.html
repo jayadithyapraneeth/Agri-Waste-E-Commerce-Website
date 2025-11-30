@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgriWaste Trading — Biomass Products</title>
+<style>
+  :root{
+    --bg:#0f1318; --surface:#ffffff; --ink:#0e1926; --muted:#5b6677; --line:#e6eaf0;
+    --accent:#0f8b8d; --accent-2:#16537e; --chip:#eef8f6; --badge:#f2f6ff;
+    --ok:#1b5e20; --warn:#8a6d1e; --danger:#b3261e;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{ margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif; color:#1b2430; background:#f5f7fb; }
+
+  /* App bar */
+  .appbar{ position:sticky; top:0; z-index:10; background:#0f1318; color:#eaf2ff; border-bottom:1px solid rgba(255,255,255,0.08); }
+  .appbar-inner{ width:min(1200px,94vw); margin:auto; display:flex; align-items:center; justify-content:space-between; padding:12px 4px; }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .logo{ width:34px; height:34px; border-radius:6px; background:linear-gradient(135deg,#0f8b8d,#16537e); color:#0d1a1f; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,0.35); }
+  .brand h1{ margin:0; font-size:1.02rem; letter-spacing:.2px; color:#e7eefc; }
+  .audience{ font-size:.86rem; color:#b7c3d6; }
+  .cart-button{ position:relative; background:#12a39f; border:none; color:#fff; font-weight:700; padding:8px 12px; border-radius:10px; cursor:pointer; }
+  .cart-count{ position:absolute; top:-7px; right:-7px; background:#ff6b6b; color:#fff; font-size:.75rem; border-radius:999px; padding:2px 6px; }
+
+  /* Filters panel */
+  .container{ width:min(1200px,94vw); margin:18px auto 30px; }
+  .panel{ background:#ffffff; border:1px solid var(--line); border-radius:14px; padding:14px; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
+  .filters{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr 0.9fr; gap:10px; }
+  .filters input,.filters select{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid #d8dde6; background:#fff; color:var(--ink); outline:none; }
+  .chips{ margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+  .chip{ font-size:0.86rem; background:#f5f7fb; border:1px solid #e3e8f1; padding:6px 10px; border-radius:999px; color:#425067; }
+
+  /* Toolbar */
+  .toolbar{ margin:12px 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .btn{ appearance:none; border:1px solid #d5dce6; background:#ffffff; color:#203040; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600; }
+  .btn.primary{ background:linear-gradient(135deg,#0f8b8d,#16537e); color:#fff; border:none; }
+  .btn.ghost{ background:#f8fbff; border:1px dashed #cfd8e6; }
+  #count{ margin-left:auto; color:#5d6a7f; }
+
+  /* Grid + Cards */
+  .grid{ margin-top:16px; display:grid; gap:16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .card{ background:var(--surface); color:var(--ink); border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.06); display:flex; flex-direction:column; transition:transform .15s ease, box-shadow .15s ease; }
+  .card:hover{ transform: translateY(-2px); box-shadow:0 12px 26px rgba(0,0,0,0.10); }
+  .image-wrap{ position:relative; width:100%; padding-top:56%; background:#f2f4f8; overflow:hidden; }
+  .image-wrap img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .card-head{ padding:14px 14px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .title{ padding:8px 14px 0; font-weight:700; font-size:1.02rem; text-transform:capitalize; }
+  .meta{ padding:8px 14px 14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .unit{ color:#415161; background:#f6f8fb; border:1px solid #e7ebf2; border-radius:8px; padding:6px 10px; }
+  .availability{ background:#eef7f0; color:#175d1e; border:1px solid #cfe6d3; padding:6px 10px; border-radius:8px; font-weight:600; }
+  .out{ background:#fff6e6; color:#8a6d1e; border:1px solid #f0e0aa; }
+  .price{ background:#f2f6ff; color:#1c3f86; border:1px solid #d8e3ff; padding:6px 10px; border-radius:8px; font-weight:700; }
+  .region-badge{ background:#f7f9fc; color:#415161; border:1px solid #e6ecf5; padding:6px 10px; border-radius:8px; }
+  .tag{ font-weight:700; font-size:.78rem; padding:6px 10px; border-radius:999px; background:#eef5ff; color:#2c3a66; border:1px solid #d9e2ff; }
+  .actions{ margin-top:auto; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #e9ecf1; gap:8px; }
+  .qty-inline{ display:flex; align-items:center; gap:6px; }
+  .qty-inline input{ width:64px; padding:6px 8px; border:1px solid #d5dce6; border-radius:8px; }
+
+  .empty{ text-align:center; color:#738198; padding:30px; border:1px dashed #d7dee9; border-radius:12px; background:#fff; }
+
+  /* Modal */
+  .modal-backdrop{ position:fixed; inset:0; background:rgba(7,12,18,0.55); display:none; align-items:center; justify-content:center; z-index:40; }
+  .modal-backdrop.show{ display:flex; }
+  .modal{ width:min(900px, 96vw); background:#fff; color:#18202a; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.35); }
+  .modal .mhead{ padding:14px 16px; border-bottom:1px solid #e9ecf1; display:flex; align-items:center; justify-content:space-between; }
+  .modal .mbody{ padding:16px; }
+  .modal .mfooter{ padding:12px 16px; border-top:1px solid #e9ecf1; display:flex; justify-content:space-between; gap:8px; align-items:center; }
+  .close-x{ cursor:pointer; border:none; background:transparent; font-size:20px; line-height:1; }
+  .farmer-list{ margin-top:8px; border:1px solid #e9ecf1; border-radius:10px; background:#f9fbfd; }
+  .farmer-row{ display:grid; grid-template-columns: 1fr auto auto auto; gap:10px; padding:8px 10px; border-bottom:1px dashed #e3e7ee; align-items:center; }
+  .farmer-row:last-child{ border-bottom:none; }
+  .pill{ padding:4px 8px; border-radius:999px; background:#eef2ff; color:#384a98; border:1px solid #d9e1ff; font-size:.82rem; }
+  .price-pill{ background:#eef7ff; color:#1c3f86; border-color:#cfe0ff; font-weight:700; }
+  .minq{ background:#f6fbf3; color:#1a5a1b; border-color:#cfe6d3; }
+
+  .modal-flex{ display:grid; grid-template-columns: 1.2fr 1.8fr; gap:14px; }
+  .modal-img{ width:100%; aspect-ratio:16/10; object-fit:cover; border-radius:10px; border:1px solid #e9ecf1; }
+
+  /* Cart Drawer */
+  .cart-drawer{ position:fixed; top:0; right:0; width:min(420px, 96vw); height:100%; background:#fff; color:#18202a; box-shadow:-10px 0 30px rgba(0,0,0,0.25); transform:translateX(100%); transition:transform .25s ease; z-index:60; display:flex; flex-direction:column; }
+  .cart-drawer.open{ transform:translateX(0); }
+  .cart-head{ padding:14px 16px; border-bottom:1px solid #e9ecf1; display:flex; justify-content:space-between; align-items:center; }
+  .cart-body{ padding:12px 16px; overflow:auto; flex:1; }
+  .cart-item{ display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; padding:10px 0; border-bottom:1px dashed #e9ecf1; }
+  .cart-item img{ width:56px; height:56px; object-fit:cover; border-radius:8px; border:1px solid #e9ecf1; }
+  .cart-item .ci-title{ font-weight:700; }
+  .cart-item .ci-meta{ color:#5d6a7f; font-size:.86rem; }
+  .cart-item .ci-qty{ display:flex; align-items:center; gap:6px; }
+  .cart-foot{ border-top:1px solid #e9ecf1; padding:12px 16px; display:flex; flex-direction:column; gap:8px; }
+  .row-between{ display:flex; justify-content:space-between; }
+</style>
+</head>
+<body>
+  <div class="appbar">
+    <div class="appbar-inner">
+      <div class="brand">
+        <div class="logo">AT</div>
+        <h1>Biomass & AgriWaste - Products</h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="audience">For industrial buyers, compost/fertilizer makers, and farmers</div>
+        <button id="open-cart" class="cart-button">Cart <span id="cart-count" class="cart-count" style="display:none;">0</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Filters -->
+    <div class="panel">
+      <div class="filters">
+        <input id="search" type="search" placeholder="Search (e.g., rice husk, wheat straw, coffee husk)…" aria-label="Search products">
+        <select id="category" aria-label="Filter by category">
+          <option value="">All categories</option>
+          <option value="cerealcrop">Cereal crop</option>
+          <option value="fruitcrop">Fruit crop</option>
+          <option value="vegetablecrop">Vegetable crop</option>
+          <option value="oilseedcrop">Oilseed crop</option>
+          <option value="fibercrop">Fiber crop</option>
+          <option value="sugarcrop">Sugar crop</option>
+          <option value="spices">Spices</option>
+          <option value="pulsewaste">Pulse waste</option>
+        </select>
+        <select id="region" aria-label="Preferred region">
+          <option value="">All regions</option>
+        </select>
+        <select id="availability" aria-label="Availability">
+          <option value="">Any availability</option>
+          <option value="in">In stock (>0)</option>
+          <option value="out">Out of stock (=0)</option>
+        </select>
+        <select id="sort" aria-label="Sort">
+          <option value="price-asc">Price: Low→High</option>
+          <option value="price-desc">Price: High→Low</option>
+          <option value="name-asc">Name: A→Z</option>
+          <option value="name-desc">Name: Z→A</option>
+          <option value="qty-desc">Quantity: High→Low</option>
+          <option value="qty-asc">Quantity: Low→High</option>
+          <option value="cat-asc">Category</option>
+        </select>
+      </div>
+      <div class="chips" id="summary"></div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn ghost" id="reset">Reset filters</button>
+      <button class="btn" id="toggle-zero">Hide zero-stock</button>
+      <span id="count"></span>
+    </div>
+
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty" style="display:none;">No products match the filters.</div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div id="cart" class="cart-drawer" aria-hidden="true">
+    <div class="cart-head">
+      <strong>Cart</strong>
+      <button id="close-cart" class="close-x" aria-label="Close">×</button>
+    </div>
+    <div id="cart-body" class="cart-body">
+      <div style="color:#6b7785;">Cart is empty.</div>
+    </div>
+    <div class="cart-foot">
+      <div class="row-between"><span>Subtotal</span><strong id="subtotal">₹0</strong></div>
+      <div class="row-between" style="color:#5d6a7f;"><span>Taxes & Shipping</span><span>Calculated at checkout</span></div>
+      <div style="display:flex; gap:8px;">
+        <button id="clear-cart" class="btn" type="button">Clear Cart</button>
+        <button id="checkout" class="btn primary" type="button">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // Compute context path so calls work regardless of being under / or /Resources
+  const APP_CTX = (() => {
+    const p = window.location.pathname;
+    const i = p.indexOf('/Resources/');
+    if (i > 0) return p.substring(0, i);
+    const parts = p.split('/').filter(Boolean);
+    return parts.length ? '/' + parts[0] : '';
+  })();
+
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  const searchInput = document.getElementById('search');
+  const categorySel = document.getElementById('category');
+  const regionSel = document.getElementById('region');
+  const availabilitySel = document.getElementById('availability');
+  const sortSel = document.getElementById('sort');
+  const resetBtn = document.getElementById('reset');
+  const toggleZeroBtn = document.getElementById('toggle-zero');
+  const countEl = document.getElementById('count');
+  const summary = document.getElementById('summary');
+
+  const cartDrawer = document.getElementById('cart');
+  const openCartBtn = document.getElementById('open-cart');
+  const closeCartBtn = document.getElementById('close-cart');
+  const cartBody = document.getElementById('cart-body');
+  const cartCount = document.getElementById('cart-count');
+  const subtotalEl = document.getElementById('subtotal');
+  const checkoutBtn = document.getElementById('checkout');
+  const clearCartBtn = document.getElementById('clear-cart');
+
+  let PRODUCTS = [];
+  let REGIONS = [];
+  let HIDE_ZERO = false;
+  let CART = [];
+
+  // --- Helpers ---
+  function inr(n){ return '₹' + (Number(n||0)).toLocaleString('en-IN'); }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
+  function findProduct(cropid){ return PRODUCTS.find(p=> String(p.cropid)===String(cropid)); }
+  function uniqueRegions(products){ const s=new Set(); products.forEach(p => (p.farmerdetails||[]).forEach(f => { if(f.location) s.add(String(f.location)); })); return Array.from(s).sort(); }
+  function populateRegions(list){ regionSel.innerHTML = '<option value="">All regions</option>' + list.map(r=>`<option>${escapeHtml(r)}</option>`).join(''); }
+
+  // Use APP_CTX for product API
+  async function loadProducts(){
+    const res = await fetch(`${APP_CTX}/productdisplayservlet?purpose=getinventorydetails`);
+    if(!res.ok) throw new Error('Network');
+    const data = await res.json();
+    return Array.isArray(data)?data:[];
+  }
+
+  function getAllocMapForProduct(cropid){
+    const map = {}; // farmerId -> qty already allocated in cart for this product
+    CART.forEach(it => { if(String(it.key)===String(cropid) && Array.isArray(it.allocParts)){ it.allocParts.forEach(p=>{ map[p.farmerid] = (map[p.farmerid]||0) + Number(p.qty||0); }); } });
+    return map;
+  }
+  function remainingFarmers(product, region, excludeSelfAlloc){
+    const all = (product && product.farmerdetails) ? product.farmerdetails.map(f=> ({...f})) : [];
+    const filtered = region ? all.filter(f => String(f.location||'').toLowerCase() === String(region).toLowerCase()) : all;
+    const map = getAllocMapForProduct(product.cropid);
+    if(excludeSelfAlloc && excludeSelfAlloc.allocParts){ excludeSelfAlloc.allocParts.forEach(p=>{ map[p.farmerid] = (map[p.farmerid]||0) - Number(p.qty||0); }); }
+    filtered.forEach(f=>{ const used = Math.max(0, map[f.farmerid]||0); f.noofunitsavailable = Math.max(0, Number(f.noofunitsavailable||0) - used); });
+    return filtered;
+  }
+  function allocateCheapest(farmers, qty){
+    let need = Math.max(0, Number(qty)||0);
+    const sorted = (farmers||[]).slice().sort((a,b) => (a.priceperunit||0)-(b.priceperunit||0));
+    let total=0; let used=0; const parts=[];
+    for(const f of sorted){ if(need<=0) break; const avail = Math.max(0, Number(f.noofunitsavailable||0)); const take = Math.min(need, avail); if(take>0){ parts.push({ farmerid:String(f.farmerid), name:f.farmername, qty:take, price:Number(f.priceperunit||0) }); total += take*Number(f.priceperunit||0); used += take; need -= take; } }
+    return { total, usedQty:used, parts };
+  }
+  function computeAllocation(product, qty, region, selection, excludeSelf){
+    const baseFarmers = remainingFarmers(product, region, excludeSelf);
+    let usable = baseFarmers;
+    if(selection && selection.type==='farmers' && Array.isArray(selection.farmerIds) && selection.farmerIds.length>0){
+      const set = new Set(selection.farmerIds.map(String));
+      usable = baseFarmers.filter(f=> set.has(String(f.farmerid)));
+    }
+    return allocateCheapest(usable, qty);
+  }
+  function partsSummary(parts, unit){ if(!parts || parts.length===0) return ''; return 'Breakdown: ' + parts.map(p=> `${escapeHtml(p.name||'')} ${p.qty} @ ${inr(p.price)}`).join(', '); }
+
+  // --- Cart ops ---
+  function addToCart(product, qty, selectedFarmerIds){
+    const addQty = Math.max(1, Number(qty)||1);
+    const key = product.cropid;
+    const region = regionSel.value || '';
+    const idx = CART.findIndex(i => i.key === key);
+    const baseSel = (Array.isArray(selectedFarmerIds) && selectedFarmerIds.length>0) ? { type:'farmers', farmerIds: selectedFarmerIds.map(String) } : { type:'auto' };
+
+    // Current item (if exists) to exclude its own allocation while computing remaining
+    const current = (idx>=0) ? CART[idx] : null;
+    const desiredQty = (current ? current.qty : 0) + addQty;
+    const alloc = computeAllocation(product, desiredQty, region, baseSel, current);
+    if(alloc.usedQty <= 0){ alert('No availability for the chosen suppliers/region.'); return; }
+
+    if(idx >= 0){
+      CART[idx].qty = alloc.usedQty; // clamp to available
+      CART[idx].selection = baseSel;
+      CART[idx].region = region;
+      CART[idx].allocParts = alloc.parts;
+    } else {
+      CART.push({ key, title: product.cropid, img: product.productimage, unit: product.unittype || 'unit', qty: alloc.usedQty, selection: baseSel, region, allocParts: alloc.parts });
+    }
+    renderCart();
+    render(); // refresh buttons disabled state with remaining availability
+  }
+  function removeFromCart(key){ CART = CART.filter(i => i.key !== key); renderCart(); render(); }
+
+  function recomputeItem(item){ const product = findProduct(item.key); if(!product) return { total:0, parts:[], usedQty:0}; const alloc = computeAllocation(product, item.qty, item.region||regionSel.value||'', item.selection, item); item.allocParts = alloc.parts; return alloc; }
+
+  function renderCart(){
+    if(CART.length === 0){ cartBody.innerHTML = '<div style="color:#6b7785;">Cart is empty.</div>'; }
+    else {
+      cartBody.innerHTML = CART.map(item => {
+        const product = findProduct(item.key) || {};
+        const alloc = recomputeItem(item);
+        const avg = (item.qty>0) ? alloc.total / item.qty : 0;
+        const supTitle = (item.selection && item.selection.type==='farmers') ? 'Selected suppliers' : 'Auto (cheapest mix)';
+        // Build supplier checkboxes scoped to item.region
+        const farmers = remainingFarmers(product, item.region||regionSel.value||'', item); // show remaining + previously selected
+        const selSet = new Set((item.selection && item.selection.farmerIds)||[]);
+        const supChecks = farmers.map(f=> `<label style="display:inline-flex;align-items:center;gap:6px;margin-right:10px;"><input type="checkbox" class="ci-sup" data-key="${escapeHtml(item.key)}" value="${escapeHtml(String(f.farmerid))}" ${selSet.size? (selSet.has(String(f.farmerid))?'checked':''):''}> ${escapeHtml(f.farmername||'')} (${inr(f.priceperunit||0)})</label>`).join('');
+        const supLine = `<div style="margin:6px 0 4px;"><strong>${supTitle}</strong> — Region: ${escapeHtml(item.region||regionSel.value||'All')}</div><div>${supChecks || '<span style="color:#6b7785;">No suppliers</span>'}</div>`;
+        return `
+          <div class="cart-item">
+            <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.title)}">
+            <div>
+              <div class="ci-title">${escapeHtml(item.title)}</div>
+              <div class="ci-meta">Avg ${inr(avg)} / ${escapeHtml(item.unit||'unit')}</div>
+              ${supLine}
+              <div class="ci-qty">
+                <label>Qty</label>
+                <input type="number" min="1" value="${item.qty}" data-key="${escapeHtml(item.key)}" class="ci-qty-input">
+                <button class="btn" data-remove="${escapeHtml(item.key)}">Remove</button>
+              </div>
+              <div style="color:#6b7785; font-size:.82rem; margin-top:4px;">${escapeHtml(partsSummary(alloc.parts, item.unit))}</div>
+            </div>
+            <div style="font-weight:700;">${inr(alloc.total)}</div>
+          </div>`;
+      }).join('');
+    }
+
+    const count = CART.reduce((a,b)=>a+b.qty,0);
+    cartCount.style.display = count > 0 ? '' : 'none';
+    cartCount.textContent = String(count);
+    const subtotal = CART.reduce((a,b)=>{ const r = recomputeItem(b); return a + r.total; }, 0);
+    subtotalEl.textContent = inr(subtotal);
+
+    // Bind events
+    cartBody.querySelectorAll('.ci-qty-input').forEach(inp => {
+      inp.addEventListener('change', (e)=>{
+        const key = e.target.getAttribute('data-key');
+        const v = Math.max(1, Number(e.target.value) || 1);
+        const it = CART.find(i => i.key === key);
+        if(it){ it.qty = v; recomputeItem(it); renderCart(); }
+      });
+    });
+    cartBody.querySelectorAll('[data-remove]').forEach(btn => { btn.addEventListener('click', ()=> removeFromCart(btn.getAttribute('data-remove'))); });
+    // Suppliers checkboxes -> selection update
+    cartBody.querySelectorAll('.ci-sup').forEach(cb => {
+      cb.addEventListener('change', (e)=>{
+        const key = e.target.getAttribute('data-key');
+        const it = CART.find(i => i.key === key);
+        if(!it) return;
+        const all = Array.from(cartBody.querySelectorAll(`.ci-sup[data-key="${CSS && CSS.escape ? CSS.escape(key): key}"]`));
+        const selectedIds = all.filter(x=> x.checked).map(x=> x.value);
+        it.selection = selectedIds.length ? { type:'farmers', farmerIds:selectedIds } : { type:'auto' };
+        recomputeItem(it); renderCart();
+      });
+    });
+  }
+
+  // --- Filters, sort, render grid ---
+  function productMatchesRegion(p, region){ if(!region) return true; const list = p.farmerdetails || []; return list.some(f => String(f.location||'').toLowerCase() === region.toLowerCase()); }
+
+  function render(){
+    let list = PRODUCTS.slice();
+    const q = searchInput.value.trim().toLowerCase();
+    const cat = categorySel.value; const region = regionSel.value; const avail = availabilitySel.value;
+    if(q) list = list.filter(p => String(p.cropid||'').toLowerCase().includes(q));
+    if(cat) list = list.filter(p => String(p.categoryid||'').toLowerCase() === cat.toLowerCase());
+    if(HIDE_ZERO) list = list.filter(p => Number(p.unitsavailable||0) > 0);
+    if(avail === 'in') list = list.filter(p => Number(p.unitsavailable||0) > 0);
+    if(avail === 'out') list = list.filter(p => Number(p.unitsavailable||0) === 0);
+    if(region) list = list.filter(p => productMatchesRegion(p, region));
+
+    const sortBy = sortSel.value;
+    list.sort((a,b)=>{
+      switch(sortBy){ case 'price-asc': return (a.minpriceperunit||0) - (b.minpriceperunit||0); case 'price-desc': return (b.minpriceperunit||0) - (a.minpriceperunit||0); case 'name-asc': return String(a.cropid||'').localeCompare(String(b.cropid||'')); case 'name-desc': return String(b.cropid||'').localeCompare(String(a.cropid||'')); case 'qty-asc': return (a.unitsavailable||0) - (b.unitsavailable||0); case 'qty-desc': return (b.unitsavailable||0) - (a.unitsavailable||0); case 'cat-asc': return String(a.categoryid||'').localeCompare(String(b.categoryid||'')); default: return 0; }
+    });
+
+    countEl.textContent = list.length + ' products';
+
+    const chips = [];
+    if(q) chips.push(`<span class="chip">Search: ${escapeHtml(q)}</span>`);
+    if(cat) chips.push(`<span class="chip">Category: ${escapeHtml(cat)}</span>`);
+    if(region) chips.push(`<span class="chip">Region: ${escapeHtml(region)}</span>`);
+    if(avail) chips.push(`<span class="chip">${avail==='in'?'In stock':'Out of stock'}</span>`);
+    if(HIDE_ZERO) chips.push('<span class="chip">Zero-stock hidden</span>');
+    summary.innerHTML = chips.join('');
+
+    renderGrid(list);
+  }
+
+  function totalRemainingAvail(product){ const farmers = remainingFarmers(product, regionSel.value||'', null); return farmers.reduce((a,f)=> a + Math.max(0, Number(f.noofunitsavailable||0)), 0); }
+
+  function renderGrid(items){
+    grid.innerHTML = '';
+    if(!items || items.length === 0){ empty.style.display = ''; return; }
+    empty.style.display = 'none';
+
+    items.forEach(item => {
+      const card = document.createElement('div'); card.className = 'card';
+      const minP = Number(item.minpriceperunit||0); const maxP = Number(item.maxpriceperunit||0);
+      const priceTxt = (minP && maxP) ? `${inr(minP)} - ${inr(maxP)}` : (minP ? `${inr(minP)}+` : 'Ask price');
+      const out = Number(item.unitsavailable||0) <= 0;
+      const imgSrc = (item.productimage||'').startsWith('/') ? item.productimage : `${APP_CTX}/${item.productimage||''}`;
+
+      card.innerHTML = `
+        <div class="image-wrap" data-details="1"><img alt="${escapeHtml(item.cropid)}" src="${escapeHtml(imgSrc)}"></div>
+        <div class="card-head"><span class="tag">${escapeHtml(item.categoryid)}</span><span class="availability ${out?'out':''}">${escapeHtml(String(item.unitsavailable))} ${escapeHtml(item.unittype||'')}</span></div>
+        <div class="title">${escapeHtml(item.cropid)}</div>
+        <div class="meta"><span class="unit">Unit: ${escapeHtml(item.unittype||'unit')}</span><span class="price">${priceTxt}</span></div>
+        <div class="actions">
+          <div class="qty-inline"><label style="font-size:.86rem;">Qty</label><input type="number" min="1" value="1" data-qty="${escapeHtml(item.cropid)}"><span class="pill">${escapeHtml(item.unittype||'unit')}</span></div>
+          <div style="display:flex; gap:8px;"><button class="btn" data-add="${escapeHtml(item.cropid)}">Add to Cart</button><button class="btn primary" data-buy="${escapeHtml(item.cropid)}">Buy Now</button></div>
+        </div>`;
+
+      card.querySelector('[data-details]').addEventListener('click', ()=> openModal(item));
+
+      const addBtn = card.querySelector('[data-add]'); const buyBtn = card.querySelector('[data-buy]'); const qtyInput = card.querySelector('[data-qty]');
+      const remaining = totalRemainingAvail(item);
+      if(out || remaining<=0){ addBtn.setAttribute('disabled',''); buyBtn.setAttribute('disabled',''); }
+
+      addBtn.addEventListener('click', (e)=>{ e.stopPropagation(); addToCart(item, qtyInput.value, null); });
+      buyBtn.addEventListener('click', (e)=>{ e.stopPropagation(); addToCart(item, qtyInput.value, null); openCart(); });
+
+      grid.appendChild(card);
+    });
+  }
+
+  // --- Modal with multi-supplier checkboxes ---
+  function setModalRegionOptions(regions, selected){ const sel = document.getElementById('m-region'); if(!sel) return; sel.innerHTML = '<option value="">All</option>' + (regions||[]).map(r=>`<option ${String(r)===String(selected)?'selected':''}>${escapeHtml(r)}</option>`).join(''); }
+
+  function openModal(item){
+    let backdrop = document.querySelector('.modal-backdrop'); if(!backdrop){ backdrop=document.createElement('div'); backdrop.className='modal-backdrop'; document.body.appendChild(backdrop); }
+    const imgSrc = (item.productimage||'').startsWith('/') ? item.productimage : `${APP_CTX}/${item.productimage||''}`;
+    const modal = document.createElement('div'); modal.className='modal';
+    modal.innerHTML = `
+      <div class="mhead"><div style="display:flex;align-items:center;gap:10px;"><strong style="text-transform:capitalize;">${escapeHtml(item.cropid)}</strong></div><button class="close-x" aria-label="Close">×</button></div>
+      <div class="mbody">
+        <div class="modal-flex">
+          <img class="modal-img" alt="Product image" src="${escapeHtml(imgSrc)}">
+          <div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;"><span class="tag">Category: ${escapeHtml(item.categoryid)}</span><span class="availability">${escapeHtml(String(item.unitsavailable))} ${escapeHtml(item.unittype||'')}</span><span class="pill">Unit: ${escapeHtml(item.unittype||'unit')}</span><span class="price">${inr(item.minpriceperunit||0)} - ${inr(item.maxpriceperunit||0)}</span></div>
+            <div style="display:flex; gap:8px; align-items:center; margin:8px 0 14px;"><label for="m-region" style="font-weight:600;color:#2a3952;">Select region:</label><select id="m-region" style="padding:8px 10px; border-radius:10px; border:1px solid #d8dde6;"></select></div>
+            <div id="m-sup-wrap" style="margin:6px 0 10px;"><div style="font-weight:600;color:#2a3952; margin-bottom:6px;">Suppliers (choose none for Auto):</div><div id="m-suppliers" style="display:flex; flex-wrap:wrap; gap:10px;"></div></div>
+            <div class="qty-inline" style="margin:8px 0 14px;"><label for="m-qty-input" style="font-weight:600;color:#2a3952;">Quantity:</label><input id="m-qty-input" type="number" min="1" value="1"><span class="pill">${escapeHtml(item.unittype||'unit')}</span></div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn" id="modal-add-cart">Add to Cart</button><button class="btn primary" id="modal-buy-now">Buy Now</button></div>
+          </div>
+        </div>
+        <h4 style="margin:1rem 0 .4rem;">Farmers supplying this product</h4>
+        <div id="farmer-list" class="farmer-list"><div class="farmer-row" style="font-weight:700;color:#2a3952;"><div>Farmer</div><div>Region</div><div>Price</div><div>Available</div></div></div>
+      </div>
+      <div class="mfooter"><div style="color:#5d6a7f;">Cheapest mix allocates from lowest prices first within availability.</div><div><button class="btn" id="contact-btn" type="button">Contact us</button><button class="btn primary" id="enquire-btn" type="button">Enquire availability</button></div></div>`;
+
+    backdrop.innerHTML=''; backdrop.appendChild(modal); backdrop.classList.add('show');
+    modal.querySelector('.close-x').addEventListener('click', ()=> backdrop.classList.remove('show')); backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) backdrop.classList.remove('show'); });
+
+    const regs = uniqueRegions([{farmerdetails: item.farmerdetails||[]}]); setModalRegionOptions(regs, regs[0]||'');
+    const regionEl = modal.querySelector('#m-region'); const supList = modal.querySelector('#m-suppliers'); const fl = modal.querySelector('#farmer-list');
+
+    function renderSuppliers(){
+      const region = regionEl.value||''; const farmers = remainingFarmers(item, region, null);
+      // supplier checkboxes
+      supList.innerHTML = farmers.map(f=> `<label style="display:inline-flex;align-items:center;gap:6px;"><input type="checkbox" value="${escapeHtml(String(f.farmerid))}"> ${escapeHtml(f.farmername||'')} (${inr(f.priceperunit||0)})</label>`).join('') || '<span style="color:#6b7785;">No suppliers</span>';
+      // farmer table
+      const header = fl.firstElementChild; fl.innerHTML=''; if(header) fl.appendChild(header);
+      farmers.forEach(f=>{ const row=document.createElement('div'); row.className='farmer-row'; row.innerHTML = `<div>${escapeHtml(f.farmername||'')}</div><div>${escapeHtml(f.location||'')}</div><div><span class="price-pill">${inr(f.priceperunit||0)}</span></div><div><span class="minq">${escapeHtml(String(f.noofunitsavailable||0))} ${escapeHtml(item.unittype||'unit')}</span></div>`; fl.appendChild(row); });
+    }
+    renderSuppliers(); if(regionEl){ regionEl.addEventListener('change', renderSuppliers); }
+
+    function getSelectedSuppliers(){ return Array.from(supList.querySelectorAll('input[type="checkbox"]')).filter(x=> x.checked).map(x=> x.value); }
+
+    const addBtn = modal.querySelector('#modal-add-cart'); const buyBtn = modal.querySelector('#modal-buy-now'); const qtyInput = modal.querySelector('#m-qty-input');
+    addBtn.addEventListener('click', ()=>{ addToCart(item, qtyInput.value, getSelectedSuppliers()); });
+    buyBtn.addEventListener('click', ()=>{ addToCart(item, qtyInput.value, getSelectedSuppliers()); openCart(); });
+
+    modal.querySelector('#contact-btn').addEventListener('click', ()=>{ const subj=encodeURIComponent(`Contact request about ${item.cropid}`); window.location.href=`mailto:?subject=${subj}`; });
+    modal.querySelector('#enquire-btn').addEventListener('click', ()=>{ const subj=encodeURIComponent(`Enquiry about ${item.cropid}`); const body=encodeURIComponent(`Hello,%0D%0A%0D%0AI would like to enquire about the availability of ${item.cropid}.`); window.location.href=`mailto:?subject=${subj}&body=${body}`; });
+  }
+
+  // --- Checkout integration ---
+  function cartToPayloadItems(){
+    return CART.map(item => {
+      const alloc = recomputeItem(item);
+      const qty = Math.max(0, Number(item.qty)||0);
+      const unitPrice = qty>0 ? Number((alloc.total/qty).toFixed(2)) : 0;
+      return {
+        product: item.title,
+        productId: String(item.key),
+        quantity: qty,
+        unitPrice: unitPrice,
+        unit: item.unit,
+        region: item.region || '',
+        sellers: (item.allocParts||[]).map(p=> ({ sellerId: String(p.farmerid), sellerName: p.name, quantity: Number(p.qty||0), unitPrice: Number(p.price||0) }))
+      };
+    }).filter(x => x.quantity > 0);
+  }
+
+  async function proceedToCheckout(){
+    const items = cartToPayloadItems();
+    if(items.length === 0){ alert('Your cart is empty. Add some products first.'); return; }
+    try { sessionStorage.setItem('agriCartItems', JSON.stringify(items)); } catch(e) {}
+    checkoutBtn.disabled = true; const prev = checkoutBtn.textContent; checkoutBtn.textContent = 'Processing…';
+    try{
+      const resp = await fetch(`${APP_CTX}/orderdetailsservlet?purpose=storecartdetails`, { method:'POST', headers:{ 'Content-Type':'application/json','Accept':'application/json' }, body: JSON.stringify({ items }) });
+      if(resp.status === 401){ alert('Session expired. Please log in again.'); checkoutBtn.disabled=false; checkoutBtn.textContent = prev; return; }
+      if(!resp.ok){ const t = await resp.text().catch(()=> ''); throw new Error(t || ('HTTP '+resp.status)); }
+      // Redirect to the checkout page under Resources
+      window.location.href = `OrderCheckoutPage1.html`;
+    } catch(err){ console.error('Checkout error:', err); alert('Failed to proceed to checkout. Please try again.'); checkoutBtn.disabled=false; checkoutBtn.textContent=prev; }
+  }
+
+  // --- Events ---
+  [searchInput, categorySel, regionSel, availabilitySel, sortSel].forEach(el => el.addEventListener('input', render));
+  resetBtn.addEventListener('click', ()=>{ searchInput.value=''; categorySel.value=''; availabilitySel.value=''; sortSel.value='price-asc'; regionSel.value=''; HIDE_ZERO=false; toggleZeroBtn.classList.remove('primary'); toggleZeroBtn.textContent='Hide zero-stock'; render(); });
+  toggleZeroBtn.addEventListener('click', ()=>{ HIDE_ZERO=!HIDE_ZERO; toggleZeroBtn.classList.toggle('primary', HIDE_ZERO); toggleZeroBtn.textContent = HIDE_ZERO ? 'Show zero-stock' : 'Hide zero-stock'; render(); });
+
+  openCartBtn.addEventListener('click', ()=> cartDrawer.classList.add('open'));
+  closeCartBtn.addEventListener('click', ()=> cartDrawer.classList.remove('open'));
+  checkoutBtn.addEventListener('click', proceedToCheckout);
+  clearCartBtn.addEventListener('click', ()=>{ CART = []; renderCart(); render(); });
+
+  // --- Bootstrap ---
+  (async function init(){ try{ PRODUCTS = await loadProducts(); } catch(e){ console.error('Load failed', e); PRODUCTS=[]; } REGIONS = uniqueRegions(PRODUCTS); populateRegions(REGIONS); render(); })();
+})();
+</script>
+</body>
+</html>

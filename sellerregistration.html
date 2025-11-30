@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Seller Registration</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #065e65, #421f5a);
+      font-family: Arial, sans-serif;
+      color: white;
+      padding: 30px;
+    }
+    .form-container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      color: black;
+      padding: 30px;
+      border-radius: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 12px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Seller Registration</h2>
+    <form>
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="phone">Phone Number:</label>
+      <input type="tel" id="phone" name="phone" required />
+
+      <label for="location">Location:</label>
+      <input type="text" id="location" name="location" required />
+
+  
+<label for="wasteType">Type of Waste:</label>
+<select id="wasteType" onchange="showOther(this)">
+  <option value="">-- Select Waste --</option>
+  <option value="crop">Rice Husk</option>
+  <option value="fruit">Sugarcane Bagasse</option>
+  <option value="plastic">Wheat Straw</option>
+  <option value="other">Other</option>
+</select>
+
+<!-- Hidden input field for custom waste -->
+<div id="otherDiv" style="display: none; margin-top: 10px;">
+  <input type="text" id="otherWaste" placeholder="Enter your waste type">
+</div>
+
+<script>
+  function showOther(select) {
+    const otherDiv = document.getElementById('otherDiv');
+    if(select.value === 'other') {
+      otherDiv.style.display = 'block';
+    } else {
+      otherDiv.style.display = 'none';
+    }
+  }
+</script>
+
+      <button type="submit">Register</button>
+    </form>
+  </div>
+</body>
+</html>
+

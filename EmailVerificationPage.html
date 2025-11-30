@@ -350,7 +350,7 @@
             </div>
         </div>
 
-        <!-- Success Card -->
+        <!-- Success Card for buyer-->
         <div class="card success-card" id="success-card" style="display: none;">
             <div class="content text-center">
                 <div class="success-icon-wrapper">
@@ -376,9 +376,41 @@
                 </button>
             </div>
         </div>
+        <!-- Success Card for seller-->
+        <div class="card success-card" id="success-card1" style="display: none;">
+            <div class="content text-center">
+                <div class="success-icon-wrapper">
+                    <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22,4 12,14.01 9,11.01"/>
+                    </svg>
+                </div>
+                <h1 class="success-title">Email Verified Successfully!</h1>
+                <p class="success-description">
+                    Your email address has been successfully verified. You can now proceed to login.
+                    <span class="email" id="success-email">your email</span> shortly.
+                </p>
+                <div class="success-alert">
+                    <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22,4 12,14.01 9,11.01"/>
+                    </svg>
+                    <span>You can now login to the portal using your password and the Username you have entered on the registration form.</span>
+                </div>
+                <button class="verify-btn" onclick="window.location.href='loginpage.html'" style="margin-top: 1rem;">
+                    Go to Login
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
+        // Add app context detection so fetch hits correct servlet path
+        const APP_CTX = (() => {
+            const p = window.location.pathname.split('/').filter(Boolean);
+            return p.length ? '/' + p[0] : '';
+        })();
+
         class EmailVerification {
             constructor() {
                 this.code = '';
@@ -396,6 +428,7 @@
             initializeElements() {
                 this.verificationCard = document.getElementById('verification-card');
                 this.successCard = document.getElementById('success-card');
+                this.successCard1 = document.getElementById('success-card1');
                 this.codeInputs = document.querySelectorAll('.code-digit');
                 this.verifyBtn = document.getElementById('verify-btn');
                 this.resendBtn = document.getElementById('resend-btn');
@@ -413,26 +446,41 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const emailFromUrl = urlParams.get('email');
                 
-                if (emailFromUrl) {
+                if(emailFromUrl) {
                     this.updateEmail(emailFromUrl);
                 } else {
                     // If no email in URL, try to fetch it from servlet
                     this.fetchEmailFromServer();
                 }
             }
+            
+            getPurpose(){
+                // Fixed window.location typo and added default
+                const url = new URL(window.location.href);
+                const explicit = url.searchParams.get('purpose');
+                if (explicit && explicit.trim()) return explicit.trim();
+                const frompage = (url.searchParams.get('from') || '').toLowerCase();
+                if(frompage === 'buyerregistrationpage'){
+                    return 'tosendbuyerid';
+                } else if(frompage === 'sellerregistrationpage'){
+                    return 'toverifyotp';
+                }
+                return 'toverifyotp';
+            }
 
             async fetchEmailFromServer() {
                 try {
-                    const response = await fetch('/api/get-registration-email', {
+                    const response = await fetch(`${APP_CTX}/api/get-registration-email`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Accept': 'application/json'
                         }
                     });
 
-                    if (response.ok) {
+                    if(response.ok) {
                         const data = await response.json();
-                        if (data.email) {
+                        if(data.email) {
                             this.updateEmail(data.email);
                         } else {
                             this.showError('Unable to retrieve email. Please try registering again.');
@@ -473,7 +521,7 @@
                 value = value.replace(/[^0-9]/g, '');
                 event.target.value = value;
 
-                if (value.length > 1) return;
+                if(value.length > 1) return;
 
                 // Update code string
                 const codeArray = this.code.split('');
@@ -482,7 +530,7 @@
                 this.code = codeArray.join('');
 
                 // Auto-focus next input
-                if (value && index < this.codeInputs.length - 1) {
+                if(value && index < this.codeInputs.length - 1) {
                     this.codeInputs[index + 1].focus();
                 }
 
@@ -491,16 +539,16 @@
             }
 
             handleKeyDown(index, event) {
-                if (event.key === 'Backspace' && !event.target.value && index > 0) {
+                if(event.key === 'Backspace' && !event.target.value && index > 0) {
                     this.codeInputs[index - 1].focus();
                 }
 
-                if (event.key === 'ArrowLeft' && index > 0) {
+                if(event.key === 'ArrowLeft' && index > 0) {
                     event.preventDefault();
                     this.codeInputs[index - 1].focus();
                 }
 
-                if (event.key === 'ArrowRight' && index < this.codeInputs.length - 1) {
+                if(event.key === 'ArrowRight' && index < this.codeInputs.length - 1) {
                     event.preventDefault();
                     this.codeInputs[index + 1].focus();
                 }
@@ -565,6 +613,10 @@
                         this.verificationCard.style.display = 'none';
                         this.successCard.style.display = 'block';
                         break;
+                    case 'success1':
+                        this.verificationCard.style.display = 'none';
+                        this.successCard1.style.display = 'block';
+                        break;
                     case 'error':
                     case 'idle':
                     default:
@@ -580,68 +632,64 @@
 
             async handleVerify() {
                 const cleanCode = this.code.replace(/\s/g, '');
-                
-                if (cleanCode.length !== 6) {
-                    this.showError('Please enter all 6 digits');
-                    return;
-                }
-
-                if (!this.email) {
-                    this.showError('Email address not found. Please try registering again.');
-                    return;
-                }
-
+                if(cleanCode.length !== 6) { this.showError('Please enter all 6 digits'); return; }
+                if(!this.email) { this.showError('Email address not found. Please try registering again.'); return; }
                 this.setState('loading');
                 this.clearError();
-
                 try {
-                    const response = await fetch('emailservlet?purpose=tosendthebuyerid', {
+                    const purpose = this.getPurpose();
+                    const from = purpose === 'tosendbuyerid' ? 'buyerregistrationpage' : 'sellerregistrationpage';
+                    const form = new URLSearchParams({ email: this.email, purpose: purpose, from: from, code: cleanCode });
+                    const resp = await fetch(`${APP_CTX}/emailservlet`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email: this.email,
-                            code: cleanCode
-                        })
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Accept': 'application/json, text/plain;q=0.8, */*;q=0.5' },
+                        body: form.toString()
                     });
+                    let ok = resp.ok; let data = null;
+                    const ctype = resp.headers.get('content-type') || '';
+                    if(ctype.includes('application/json')) { data = await resp.json().catch(()=>({})); }
+                    else { await resp.text().catch(()=> ''); }
 
-                    const data = await response.json();
-
-                    if (response.ok && data.verified === true) {
-                        this.setState('success');
+                    if(ok && (!data || data.verified === true || data.success === true)) {
+                    	if(purpose === 'tosendbuyerid'){
+                    		this.setState('success');
+                    	}else if(purpose === 'toverifyotp'){
+                    		this.setState('success1');
+                    	}
                     } else {
-                        this.showError(data.message || 'Invalid verification code. Please try again.');
+                        const msg = (data && (data.message || data.error)) || 'Invalid verification code. Please try again.';
+                        this.showError(msg);
                         this.setState('error');
                         this.resetCodeInputs();
                     }
-                } catch (error) {
-                    console.error('Verification error:', error);
+                } catch (e) {
+                    console.error('Verification error:', e);
                     this.showError('Network error. Please check your connection and try again.');
                     this.setState('error');
                 }
             }
 
             async handleResendCode() {
-                if (this.resendCountdown > 0) return;
+                if(this.resendCountdown > 0) return;
 
-                if (!this.email) {
+                if(!this.email) {
                     this.showError('Email address not found. Please try registering again.');
                     return;
                 }
 
                 try {
-                    const response = await fetch('/api/resend-verification-code', {
+                    const response = await fetch(`${APP_CTX}/api/resend-verification-code`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Accept': 'application/json'
                         },
                         body: JSON.stringify({ email: this.email })
                     });
 
                     const data = await response.json();
 
-                    if (response.ok && data.success === true) {
+                    if(response.ok && data.success === true) {
                         this.resetCodeInputs();
                         this.clearError();
                         this.startResendCountdown();
@@ -664,7 +712,7 @@
                     this.resendCountdown--;
                     this.countdownSpan.textContent = `(${this.resendCountdown}s)`;
                     
-                    if (this.resendCountdown <= 0) {
+                    if(this.resendCountdown <= 0) {
                         clearInterval(this.countdownTimer);
                         this.resendBtn.disabled = false;
                         this.countdownSpan.style.display = 'none';
@@ -683,7 +731,7 @@
             }
 
             focusFirstInput() {
-                if (this.codeInputs.length > 0) {
+                if(this.codeInputs.length > 0) {
                     this.codeInputs[0].focus();
                 }
             }

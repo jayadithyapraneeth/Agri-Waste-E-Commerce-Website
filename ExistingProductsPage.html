@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Products | AgroConnect</title>
+  <style>
+    :root {
+      --primary: #5D9C59;
+      --secondary: #C7E8CA;
+      --accent: #DF2E38;
+      --light: #F5F5F5;
+      --dark: #2C3639;
+      --text: #333;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light);
+      margin: 0;
+      padding: 0;
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .page-title {
+      color: var(--dark);
+      margin: 0;
+    }
+
+    .add-product-btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .add-product-btn:hover {
+      background-color: #4a7c47;
+    }
+
+    .search-filter {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .search-box, .filter-dropdown {
+      padding: 8px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .search-box {
+      width: 300px;
+    }
+
+    .products-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .products-table th {
+      background-color: var(--primary);
+      color: white;
+      text-align: left;
+      padding: 15px;
+    }
+
+    .products-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .products-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .products-table tr:hover {
+      background-color: var(--secondary);
+    }
+
+    .product-type {
+      font-weight: bold;
+      color: var(--dark);
+    }
+
+    .product-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .stock {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 0.85em;
+    }
+
+    .in-stock {
+      background-color: #E8F5E9;
+      color: #2E7D32;
+    }
+
+    .low-stock {
+      background-color: #FFF8E1;
+      color: #FF8F00;
+    }
+
+    .out-of-stock {
+      background-color: #FFEBEE;
+      color: #C62828;
+    }
+
+    .price {
+      font-weight: bold;
+      color: var(--dark);
+    }
+
+    .action-btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-right: 5px;
+      font-size: 0.85em;
+    }
+
+    .edit-btn {
+      background-color: #2196F3;
+      color: white;
+    }
+
+    .delete-btn {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .status-badge {
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+
+    .active {
+      background-color: #E8F5E9;
+      color: #2E7D32;
+    }
+
+    .inactive {
+      background-color: #E0E0E0;
+      color: #616161;
+    }
+
+    @media (max-width: 768px) {
+      .products-table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      .search-filter {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">My Crop Waste Products</h1>
+      <a href="NewProductRegistrationPage.html">
+        <button class="add-product-btn">+ Add New Product</button>
+      </a>
+    </div>
+
+    <div class="search-filter">
+      <input type="text" class="search-box" id="searchInput" placeholder="search products...">
+      <select class="filter-dropdown" id="filterDropdown">
+        <option value="all">All Products</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="cereal">Cereal Crop Waste</option>
+        <option value="fiber">Fiber Crop Waste</option>
+        <option value="fruit">Fruit Crop Waste</option>
+        <option value="oil">Oil Seed Waste</option>
+        <option value="pulse">Pulse Waste</option>
+        <option value="spices">Spices</option>
+        <option value="sugar">Sugar Crop Waste</option>
+        <option value="vegetable">Vegetable Crop Waste</option>
+      </select>
+    </div>
+
+    <table class="products-table" id="productsTable">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Image</th>
+          <th>Category</th>
+          <th>Stock</th>
+          <th>Price/Unit</th>
+          <th>Total Worth</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+<!--        <tr>
+          <td class="product-type" id="cropid">CW001</td>
+          <td><img src="" alt="" id ="productimage" class="product-image"></td>
+          <td id="categoryid">cereal</td>
+          <td><span class="stock in-stock" id ="unitsavailable">120 units</span></td>
+          <td class="price" id ="priceperunit">15/kg</td>
+          <td class="price" id = "totalworth">1800 Rs</td>
+          <td><span class="status-badge active" id="availabilitystatus">Active</span></td>
+          <td>
+            <button class="action-btn edit-btn">Edit</button>
+            <button class="action-btn delete-btn">Delete</button>
+          </td>
+        </tr> -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const filterDropdown = document.getElementById('filterDropdown');
+    const table = document.getElementById('productsTable').getElementsByTagName('tbody')[0];
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      Array.from(table.rows).forEach(row => {
+        const match = row.innerText.toLowerCase().includes(query);
+        row.style.display = match ? '' : 'none';
+      });
+    });
+
+    filterDropdown.addEventListener('change', () => {
+      const filter = filterDropdown.value;
+      Array.from(table.rows).forEach(row => {
+        const type = row.cells[2].innerText.toLowerCase();
+        const status = row.cells[6].innerText.toLowerCase();
+        const matchesType = filter === 'all' || type.includes(filter);
+        const matchesStatus = filter === 'active' || filter === 'inactive' ? status === filter : true;
+        row.style.display = matchesType && matchesStatus ? '' : 'none';
+      });
+    });
+  </script>
+  
+  <script>
+  
+  document.addEventListener("DOMContentLoaded", function() {
+      // Fetch products from the server when the content is loaded
+      const tbody = document.querySelector('#productsTable tbody');
+      fetch("existingproductlistpageservlet",
+    		  {method: 'GET'
+   })
+        .then(response => response.json())
+        .then(data => {
+          tbody.innerHTML = ''; // Clear existing rows
+
+          if(data.length === 0 || !data) {
+        	  const row = document.createElement('tr');
+            row.innerHTML = `<td colspan='8' class='empty'>No products regeistered yet.</td>`;
+            tbody.appendChild(row);
+          }else{
+        	  data.forEach(product => {
+                  const row = document.createElement('tr');
+                  row.innerHTML = `
+                    <td>${product.cropid}</td>
+                    <td><img src=${product.productimage} alt="${product.cropid}" class="product-image"></td>
+                    <td>${product.category}</td>
+                    <td><span class='stock in-stock'>${product.noofunitsavailable} units</span></td>
+                    <td class='price'>₹${product.priceperunit}/kg</td>
+                    <td class='amount'>₹${product.totalworth}</td>
+                    <td><span class='status-badge ${product.availabilitystatus.toLowerCase()}'>${product.availabilitystatus}</span></td>
+                    <td>
+                     <button class='action-btn edit-btn' onclick="window.location.href='editproductpage?cropid=${product.cropid}'">Edit</button>
+                     <button class='action-btn delete-btn' onclick="if(confirm('Are you sure you want to delete this product?')) { window.location.href='deleteproductservlet?cropid=${product.cropid}'; }">Delete</button>
+                    </td>
+                  `;
+                  tbody.appendChild(row);
+                });  
+          }
+        });
+    });
+  
+  </script>
+
+</body>
+</html>
