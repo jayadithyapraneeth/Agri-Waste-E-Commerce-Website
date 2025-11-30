@@ -52,11 +52,14 @@ public class NewProductRegistrationDatabaseUpdateServlet extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		
+		if(request.getSession(false) == null || request.getSession(false).getAttribute("loginstatus") == "died") {
+			response.sendRedirect("loginpage.html?error=Session expired. Please login again to continue.");
+			return;
+		}
 		
 		int result =0;
 		
-		HttpSession session = request.getSession(false);
+		HttpSession session = request.getSession(false);// Get existing session from the url as the last servlet encoded the session id in the url - that is login or registration servlet
 		String  farmerid = "";
 		if(session != null) {
 			//if(request.getSession(false).getId == request.getSession(false).getParameter)
@@ -65,7 +68,9 @@ public class NewProductRegistrationDatabaseUpdateServlet extends HttpServlet {
 			farmerid = (String) session.getAttribute("userid");
 		}else {
 			// if the present session is null, then you have to create a new session and send its id to the next session
-			session = request.getSession(true);
+			//but a new session created at this point is useless as the userid of the user is lost along with many session attributes
+			session = request.getSession(true);//as we are not using any cookies to store and retrive the previous session data, creating a new empty session have no meaning
+			System.out.println("new session created and no session variables are active");
 		}
 		
 		try(Connection conn = DatabaseConnectionPool.getConnectionPool()){//DriverManager.getConnection("jdbc:mysql://localhost/agriwasteecommerceplatform","jayadithyapraneeth","0000")){

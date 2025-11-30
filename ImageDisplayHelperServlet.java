@@ -12,6 +12,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -45,6 +48,12 @@ public class ImageDisplayHelperServlet extends HttpServlet {
 //		}catch(ClassNotFoundException cnfe) {
 //			cnfe.printStackTrace();
 //		}
+		
+		if(request.getSession(false) == null || request.getSession(false).getAttribute("loginstatus") == "died") {
+			response.sendRedirect("loginpage.html?error=Session expired. Please login again to continue.");
+			return;
+		}
+		
 		System.out.println("Image display servlet");
 		PreparedStatement pstmt;
 		ResultSet rs;
@@ -57,7 +66,7 @@ public class ImageDisplayHelperServlet extends HttpServlet {
 			System.out.println("farmerid: "+farmerid+" cropid: "+cropid);
 			
 			switch(purpose) {
-			case "productimage" :
+			case "productimage" ://this is for displaying the product for the farmer
 				System.out.println("switch case productimage");
 				pstmt = conn.prepareStatement("select productimage from farmercropjunction where farmerid = ? and cropid = ?");
 				pstmt.setString(1, farmerid);
@@ -133,6 +142,52 @@ public class ImageDisplayHelperServlet extends HttpServlet {
 					e.printStackTrace();
 				}
 		   		
+		   		break;
+		   		
+		   	case "exploreproductimage" : 
+		   		System.out.println("switch case exploreproductimage");
+				pstmt = conn.prepareStatement("select productimage from inventorydetails where cropid = ?");
+				pstmt.setString(1, cropid);
+				rs = pstmt.executeQuery();
+				
+				try {
+//					File f = new File ("C://Users//PRANEETH//Desktop//New folder//inventoryfile.jpeg");
+//					FileOutputStream fos = new FileOutputStream(f);
+					System.out.println("Entered try block again");
+					if(rs.next()) {
+						System.out.println("rs.next() in Image display servlet");
+						byte[] imagebytes = rs.getBytes("productimage");
+						response.setContentType("image/*");
+//						System.out.println("response set to image/*");
+//						fos.write(imagebytes);
+//						fos.close();
+//						if(f.exists()) {
+//							System.out.println("image written to newfolder successfully");
+//						}
+						if(imagebytes != null) {
+							response.setContentLength(imagebytes.length);
+							response.getOutputStream().write(imagebytes); // image will be displayed in the div card
+						}else {
+//							response.setContentType("text/html");
+//							response.getWriter().print("/C://Users//PRANEETH//Downloads//OIP.webp"); // default image path if no image is found
+							Path path = Paths.get("C:/Users/PRANEETH/Downloads/OIP.webp");
+						    byte[] defaultImage = Files.readAllBytes(path);
+
+						    response.setContentType("image/webp"); // match your default image type
+						    response.setContentLength(defaultImage.length);
+						    response.getOutputStream().write(defaultImage);
+
+						}
+						
+						System.out.println("response.getOutputStream().write(imagebytes)");
+						response.setContentType("text/html");
+					}else {
+						System.out.println("rs.next() failed");
+					}
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+
 		   		break;
 			
 			}

@@ -34,8 +34,15 @@ public class ExistingProductListPageServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
+		if(request.getSession(false) == null || request.getSession(false).getAttribute("loginstatus") == "died") {
+			response.sendRedirect("loginpage.html?error=Session expired. Please login again to continue.");
+			return;
+		}
+		
 		String userid = (String) request.getSession(false).getAttribute("userid");
-		if (userid != null){
+		if(userid != null){
+			System.out.println("existing product list page servlet");
 			try(Connection conn = DatabaseConnectionPool.getConnectionPool()){
 				PreparedStatement pstmt = conn.prepareStatement("select farmercropjunction.cropid,categoryid,noofunitsavailable,priceperunit,totalworth from farmercropjunction join inventorydetails where farmercropjunction.cropid = inventorydetails.cropid and farmercropjunction.farmerid = ?");
 				pstmt.setString(1, userid);
@@ -46,10 +53,11 @@ public class ExistingProductListPageServlet extends HttpServlet {
 				
 				if(rs.next()) {
 					JSONArray jsonarray = new JSONArray();
-					JSONObject[] jsonobject = new JSONObject[rs1.getInt("count(*)")];
+					JSONObject[] jsonobject = new JSONObject[rs1.getInt("count(*)")];//initiating the array of JSON objects
 					int i = 0;
 					do {
 						jsonobject[i] = new JSONObject();
+						
 						jsonobject[i].put("cropid", rs.getString("cropid"));
 						//imagebytes = rs.getBytes("productimage");
 						//response.setContentType("images/*");
@@ -60,6 +68,7 @@ public class ExistingProductListPageServlet extends HttpServlet {
 						jsonobject[i].put("noofunitsavailable", rs.getInt("noofunitsavailable"));
 						jsonobject[i].put("priceperunit", rs.getInt("priceperunit"));
 						jsonobject[i].put("totalworth", rs.getInt("totalworth"));
+						jsonobject[i].put("availabilitystatus", "active");
 						
 						jsonarray.put(jsonobject[i]);
 						i+=1;

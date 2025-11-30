@@ -9,6 +9,7 @@ public class DatabaseConnectionPool {//
 	
 	
     public static Connection getConnectionPool() throws SQLException {
+		@SuppressWarnings("resource")//here datasource variable is a resource for the other objects, it can't be closed before returning the active one
 		BasicDataSource datasource = new BasicDataSource();
 		datasource.setUrl("jdbc:mysql://localhost:3306/agriwasteecommerceplatform");
 		datasource.setUsername("jayadithyapraneeth");
@@ -20,6 +21,7 @@ public class DatabaseConnectionPool {//
 		datasource.setMaxIdle(5); // Maximum number of idle connections
 		datasource.setMinIdle(2); // Minimum number of idle connections
 		return datasource.getConnection();
+		
 	}
 	
 

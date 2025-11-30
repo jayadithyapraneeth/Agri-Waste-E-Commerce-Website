@@ -40,12 +40,19 @@ public class OrderTrackingServletFarmer extends HttpServlet {
 		// TODO Auto-generated method stub
 		response.setContentType("response/json");
 		
+		if(request.getSession(false) == null || request.getSession(false).getAttribute("loginstatus") == "died") {
+			response.sendRedirect("loginpage.html?error=Session expired. Please login again to continue.");
+			return;
+		}
+		
 		String farmerid = "";
-		HttpSession session = request.getSession(false);
+		HttpSession session = request.getSession(false);// Get existing session from the url as the last servlet encoded the session id in the url - that is login or registration servlet
 		if(session != null) {
 			farmerid = (String)session.getAttribute("userid");
 		} else {
-			session = request.getSession(true);
+			// if the present session is null, then you have to create a new session and send its id to the next session
+			//but a new session created at this point is useless as the userid of the user is lost along with many session attributes
+			session = request.getSession(true);//as we are not using any cookies to store and retrive the previous session data, creating a new empty session have no meaning
 		}
 		
 		
@@ -58,7 +65,7 @@ public class OrderTrackingServletFarmer extends HttpServlet {
 			ResultSet rs1 = conn.createStatement().executeQuery("select count(*) from orderhistory where sellerid = '"+farmerid+"'");
 			rs1.next();
 			
-			
+			System.out.println("Order Tracking Page:"+rs1.getInt("count(*)"));
 			PrintWriter pw = response.getWriter();
 			
 			System.out.println("Order Tracking Page afterresultset");
@@ -68,7 +75,7 @@ public class OrderTrackingServletFarmer extends HttpServlet {
 			response.setDateHeader("Expires", 0); // Proxies.
 			
 			JSONArray jsonarray = new JSONArray();
-					if (rs.next()) {
+					if(rs.next()) {
 					  
 					  JSONObject[] json = new JSONObject[rs1.getInt("count(*)")];
 						int i = 0;

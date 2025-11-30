@@ -27,17 +27,18 @@ public class LogoutServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		if(request.getSession(false) != null) {
-			request.getSession().invalidate(); // Invalidate the session
-		}else {
-			return;
-		}
-		
 		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 		response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
 		response.setDateHeader("Expires", 0); // Proxies.
 		
-		response.sendRedirect("index.html"); // Redirect to index page
+		if(request.getSession(false) != null) {
+			request.getSession(false).setAttribute("loginstatus", "died");
+			response.sendRedirect("index.html"); // Redirect to index page// Set login status to died, navigating to previous pages is not possible(but not likely possible)
+			request.getSession(false).invalidate(); // Invalidate the session
+		}else {
+			System.out.println("No active session found during logout.");
+			return;
+		}
 		
 		System.out.println("User logged out successfully.");
 		
@@ -48,7 +49,20 @@ public class LogoutServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
+//		
+//		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+//		response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+//		response.setDateHeader("Expires", 0); // Proxies.
+//		
+//		if(request.getSession(false) != null) {
+//			request.getSession(false).setAttribute("loginstatus", "died");
+//			response.sendRedirect("login.html"); // Redirect to index page// Set login status to died, navigating to previous pages is not possible(but not likely possible)
+//			request.getSession(false).invalidate(); // Invalidate the session
+//		}else {
+//			System.out.println("No active session found during logout.");
+//			return;
+//		}
+		
 	}
 
 }
