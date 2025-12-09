@@ -246,10 +246,6 @@ The platform supports trading of various agricultural waste types:
 - Advanced analytics dashboard
 - IoT integration for quality monitoring
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 📞 Contact
 
 For questions, suggestions, or support, please reach out to:
@@ -265,3 +261,28 @@ For questions, suggestions, or support, please reach out to:
 ---
 
 **Made with ❤️ for sustainable agriculture and circular economy in India**
+
+---
+
+##📘 Copyright & Usage Notice
+
+Copyright © 2025 MACHAVARAPU JAYADITHYA PRANEETH. All Rights Reserved.
+
+This project and all associated source code, designs, architecture, and documentation are the exclusive property of the author.
+
+🔒 Usage Restrictions
+
+The following actions are strictly prohibited without explicit written permission from the author:
+
+Copying or reusing any part of the source code, & conceptual architecture
+
+Modifying, redistributing, or creating derivative works
+
+Using this project in academic submissions, commercial products, or other software
+
+Replicating the underlying architectural concepts for publication or projects
+
+👀 Public Visibility Statement
+
+This repository is public only for portfolio, skill demonstration, and recruiter review purposes.
+No license is granted. No rights are provided. Unauthorized use of this project will be treated as a copyright violation.
