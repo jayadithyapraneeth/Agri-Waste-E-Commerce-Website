@@ -26,8 +26,8 @@ Notably, the platform increases the trading capacity of Agri-waste in India, mak
 - **Advanced Filtering**: Filter by location, waste type, quantity, and price
 - **Location-Based Discovery**: Find products within specific radius
 - **Seamless Order Tracking**: Real-time transparency throughout the process
-- **Flexible Quantity Orders**: Purchase exactly what you need
-- **Intelligent Recommendations**: AI-driven suggestions based on preferences and seller ratings
+- **Flexible Quantity Orders**: Purchase exactly what amount you need
+- **Intelligent Recommendations**: suggestions based on preferences and seller ratings
 
 ### 🌍 Platform Features
 - **Dedicated Crop Waste Trading**: Specialized platform for agricultural waste only
@@ -39,7 +39,7 @@ Notably, the platform increases the trading capacity of Agri-waste in India, mak
 ## 🛠️ Technology Stack
 
 ### Backend
-- **Java**: Core backend development with Servlets
+- **Java (Jakarta EE)**: Core backend development with Servlets
 - **Apache Tomcat**: Web server and servlet container
 - **MySQL**: Primary database for data storage
 - **JDBC**: Database connectivity
@@ -51,12 +51,12 @@ Notably, the platform increases the trading capacity of Agri-waste in India, mak
 - **HTML5/CSS3**: Core web technologies
 - **JavaScript**: Dynamic user interactions
 - **AJAX**: Asynchronous server communication
-- **Fetch API**: For fullfilling the data needs Dynamically
+- **Fetch API**: For fullfilling the data needs Dynamically (complete backend-frontend separation)
 
 ### External Services
 - **Payment Gateway**: Razorpay/PayPal integration
 - **SMS API**: Notification services
-- **Email Services**: User communications
+- **Email Services**: User communications & Primary Email notifications
 
 ## 🚀 Quick Start
 
@@ -253,12 +253,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Contact
 
 For questions, suggestions, or support, please reach out to:
-- **Email**: team@agri-waste-ecommerce.com
-- **GitHub Issues**: [Create an issue](https://github.com/your-username/agri-waste-ecommerce/issues)
+- **Email**: machavarapujayadithyapraneeth@outlook.com, machavarapujayadithyapraneeth@gmail.com
+- **GitHub Issues**: [Create an issue](https://github.com/jayadithyapraneeth/Agri-Waste-E-Commerce-Website/issues)
 
 ## 🙏 Acknowledgments
 
-- Thanks to all farmers and industry partners who provided valuable insights
 - Special recognition to our academic advisor for project guidance
 - Appreciation for open-source communities that made this project possible
 
